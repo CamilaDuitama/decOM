@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: decOM
+Version: 0.0.10
+Summary: decOM: K-mer method for aOral metagenome decontamination
+Home-page: https://github.com/CamilaDuitama/decOM
+Author: Camila Duitama González
+Author-email: cduitama@pasteur.fr
+License: UNKNOWN
+Project-URL: Bug Tracker, https://github.com/CamilaDuitama/decOM/issues
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+Provides-Extra: test
+License-File: LICENSE
+
+# decOM package
+decOM for contamination assessment using k-mer-based microbial sourcetracking
+
+

@@ -1,0 +1,15 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+src/decOM/__init__.py
+src/decOM/__main__.py
+src/decOM.egg-info/PKG-INFO
+src/decOM.egg-info/SOURCES.txt
+src/decOM.egg-info/dependency_links.txt
+src/decOM.egg-info/entry_points.txt
+src/decOM.egg-info/requires.txt
+src/decOM.egg-info/top_level.txt
+src/decOM/data/__init__.py
+src/decOM/data/kmtricks.fof
+src/decOM/data/metadata.csv
