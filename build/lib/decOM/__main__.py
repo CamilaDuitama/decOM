@@ -1,5 +1,7 @@
-#!/pasteur/appa/homes/cduitama/anaconda3/bin/python3.8
+#!/usr/bin/env python3
 
+import os
+import subprocess
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
@@ -15,9 +17,25 @@ import dask.dataframe as dd
 import dask.array as da
 from importlib_resources import files, as_file
 from . import data
+from .__version__ import __version__
 import argparse
+import plotly.graph_objects as go
+import plotly.io as pio
+pio.renderers.default = 'iframe' 
+
+decOM_root = os.path.dirname(os.path.abspath(os.path.realpath(os.__file__)))
+
+def _version():
+    decOM_version = f'{__version__}'
+    git = subprocess.run(['git', '-C', decOM_root, 'describe', '--always'], capture_output=True, stderr=None, text=True)
+    if git.returncode == 0:
+        git_hash = git.stdout.strip().rsplit('-',1)[-1]
+        decOM_version += f'-{git_hash}'
+    return decOM_version
 
 def main(argv=None):
+    
+    print("Starting decOM version: "+str(_version()))
     
     #Set path to resources
     resources=str(files(data))
@@ -47,7 +65,6 @@ def main(argv=None):
     
     cluster = LocalCluster(memory_limit=mem,n_workers=int(t))
     client = Client(cluster)
-    client = Client()
     print("Client was set:")
     print(client)
 
@@ -127,7 +144,7 @@ def main(argv=None):
     if plot:
         fig = px.bar(result, y=["p_aOral", "p_mOral","p_Sediment/Soil","p_Skin","p_Unknown"], color_discrete_sequence=px.colors.qualitative.G10, opacity=0.8, title="Proportions sink "+ sink)
         fig.update_layout(width=400,height=800)
-        fig.write_image("result_plot.png",width=400,height=800,scale=5)
+        fig.write_image("result_plot_"+sink+".pdf",width=400,height=800,scale=5)
     
     client.close()
 
