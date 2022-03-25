@@ -54,42 +54,27 @@ You can input your a fastq/fasta file from your own experiment, you can find an 
 ## Command line options
 
 ```
-usage: decOM [-h] [-v] -s SINK -p_sources PATH_SOURCES -p_sink PATH_SINK -p_missing PATH_MISSING_KMERS -mem MEMORY -t THREADS [-plt PLOT]
+usage: decOM [-h] -s SINK -p_sources PATH_SOURCES -p_sink PATH_SINK -p_missing PATH_MISSING_KMERS -mem MEMORY -t THREADS [-p PLOT] [-V]
 
 Mandatory arguments:
+-s SINK, --sink SINK  Write down the name of your sink
+-p_sources PATH_SOURCES, --path_sources PATH_SOURCES path to sources matrix. Ex: ./matrix_100.pa.txt
+-p_sink PATH_SINK, --path_sink PATH_SINK Path to sink vector, the output of kmtricks filter Ex: ./kmtricks_output/matrices/100.vec
+-p_missing PATH_MISSING_KMERS, --path_missing_kmers PATH_MISSING_KMERS Path to missing kmers, the output of kmtricks filter after using kmtricks aggregate Ex: ./kmtricks_output/count/{sink}_missing.txt
+-mem MEMORY, --memory MEMORY Write down how much memory you want to use. Ex: 50GB
+-t THREADS, --threads THREADS Number of threads to use. Ex: 10
 
--s, --sink  Write down the name of your sink
-
--p_sources, --path_sources
-
-path to sources matrix. Ex: ./matrix_100.pa.txt
-
--p_sink, --path_sink
-
-Path to sink vector, the output of kmtricks filter Ex: ./kmtricks_output/matrices/100.vec
-
--p_missing , --path_missing_kmers
-
-Path to missing kmers, the output of kmtricks filter after using kmtricks aggregate Ex: ./kmtricks_output/count/{sink}_missing.txt
-
--mem, --memory
-
-Write down how much memory you want to use. Ex: 50GiB
-
--t, --threads
-
-Number of threads to use. Ex: 10
 
 Optional arguments:
+-p PLOT, --plot PLOT  True if you want a plot with the source proportions of the sink, else False
 
--plt, --plot
-True if you want a plot with the source proportions of the sink, else False
 
 Other arguments:
 -h, --help  show this help message and exit
+-V, --version Show version number and exit
+Mandatory arguments:
 
 ```
 
 ## Reference
-
 
