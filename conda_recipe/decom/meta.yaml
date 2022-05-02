@@ -1,5 +1,5 @@
 {% set name = "decOM" %}
-{% set version = "0.0.13" %}
+{% set version = "0.0.14" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 5123d171790ff96a6b66edd314c1387926864bb7fb81738ffdef944f0bd39c3e
+  sha256: e800149dcd19311923b842a56c52c345266115b26509f4b5bf52afaa50c1de53
 
 build:
   number: 0
@@ -23,12 +23,14 @@ requirements:
     - pip
     - plotly >=5.5.0
     - python
+    - kmtricks >=1.2.1
   run:
     - dask >=2021.12.0
     - importlib_resources >=5.4.0
     - python-kaleido
     - plotly >=5.5.0
     - python
+    - kmtricks >=1.2.1
 
 test:
   imports:
@@ -48,4 +50,4 @@ about:
 
 extra:
   recipe-maintainers:
-    - your-github-id-here
+    - #33686652

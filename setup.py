@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="decOM",
-    version="0.0.13",
+    version="0.0.15",
     author="Camila Duitama González",
     author_email="cduitama@pasteur.fr",
     description="decOM: K-mer method for aOral metagenome decontamination",
@@ -26,7 +26,7 @@ setuptools.setup(
         'plotly>=5.5.0',
         'importlib_resources>=5.4.0',
         'dask>=2021.12.0',
-        'kaleido',
+        'kaleido'
         ],
     python_requires=">=3.6",
     include_package_data=True,

@@ -18,10 +18,12 @@ import dask.array as da
 from importlib_resources import files, as_file
 from . import data
 from .__version__ import __version__
+from .__utils__ import *
+from .__sink__ import create_vector
 import argparse
 import plotly.graph_objects as go
 import plotly.io as pio
-pio.renderers.default = 'iframe' 
+pio.renderers.default = 'iframe'
 
 decOM_root = os.path.dirname(os.path.abspath(os.path.realpath(os.__file__)))
 
@@ -33,40 +35,51 @@ def _version():
         decOM_version += f'-{git_hash}'
     return decOM_version
 
-def main(argv=None):
-    
-    print("Starting decOM version: "+str(_version()))
-    
+def main(argv=None):    
     #Set path to resources
     resources=str(files(data))
 
-    #Parse args
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--verbose", help="increase output verbosity",
-                        action="store_true")
+    #Parser
+    parser = argparse.ArgumentParser(prog="decOM",description="Microbial source tracking for contamination assessment of ancient oral samples using k-mer-based methods",add_help=True)
     
-    parser.add_argument("-s","--sink", help="Write down the name of your sink",required=True)
-    parser.add_argument("-p_sources","--path_sources",help="path to sources matrix. Ex: ./matrix_100.pa.txt",required=True)
-    parser.add_argument("-p_sink","--path_sink",help="Path to sink vector, the output of kmtricks filter Ex: ./kmtricks_output/matrices/100.vec",required=True)
-    parser.add_argument("-p_missing", "--path_missing_kmers",help="Path to missing kmers, the output of kmtricks filter after using kmtricks aggregate Ex: ./kmtricks_output/count/{sink}_missing.txt",required=True)
-    parser.add_argument("-mem","--memory",help="Write down how much memory you want to use. Ex: 500GiB",required=True)
-    parser.add_argument("-t","--threads",help="Number of threads to use. Ex: 10",required=True)
-    parser.add_argument("-plt","--plot",help="True if you want a plot with the source proportions of the sink, else False",required=False,default=True)
+    ## Mandatory arguments
+    parser.add_argument("-s","--sink", dest='SINK',help="Write down the name of your sink",required=True)
+    parser.add_argument("-p_sources","--path_sources",dest='PATH_SOURCES',help="path to folder downloaded from https://zenodo.org/record/6385193#.Ym-wTy8RphA ",required=True)
+    parser.add_argument("-k","--key", dest='KEY',help="filtering key (a kmtricks fof with only one sample).",required=True)
+    parser.add_argument("-mem","--memory",dest='MEMORY',help="Write down how much memory you want to use. Ex: 500GiB",required=True)
+    parser.add_argument("-t","--threads",dest='THREADS',help="Number of threads to use. Ex: 10",required=True)
+    
+    ## Optional arguments
+    parser.add_argument("-p","--plot",dest='PLOT',help="True if you want a plot with the source proportions of the sink, else False",required=False,default=True,type=bool)
+    
+    ##Other arguments
+    parser.add_argument('-V','--version', action='version', version=f'decOM {_version()}', help='Show version number and exit')
+
+    #Parse arguments
     args = parser.parse_args()
     
+    print_status("Starting decOM version: "+str(_version()))
+
     start=time.time() 
-    sink=args.sink
-    p_sources=args.path_sources
-    path_sink=args.path_sink
-    path_missing_kmers=args.path_missing_kmers
-    mem=args.memory
-    t=args.threads
-    plot=args.plot
+    sink=args.SINK
+    p_sources=args.PATH_SOURCES
+    key=args.KEY
+    mem=args.MEMORY
+    t=args.THREADS
+    plot=args.PLOT
     
+    #Create vector of sources
+    create_vector(path_to_sources=p_sources,key=key,accession=sink,t=t)
+    
+    #Define paths from output of kmtricks filter and kmtricks aggregate
+    path_sink=sink+"_vector/matrices/100.vec"
+    path_missing_kmers=sink+"_vector/counts/partition_100/"+sink+"_missing.txt"
+    
+    #Initialize dask
     cluster = LocalCluster(memory_limit=mem,n_workers=int(t))
     client = Client(cluster)
-    print("Client was set:")
-    print(client)
+    print_status("Client was set:")
+    print_status(client)
 
     
     #Load metadata from sources
@@ -91,19 +104,17 @@ def main(argv=None):
     result=pd.DataFrame(columns=classes+["Unknown","Running time","Sink"])
 
     #Load k-mer matrix of sources as dataframe
-    partition=dd.read_table(p_sources+"matrix_100.pa.txt",header=None,sep=" ",\
+    partition=dd.read_table(p_sources+"matrices/matrix_100.pa.txt",header=None,sep=" ",\
                             names=["Kmer"]+list(colnames["Run_accession"]))
 
     #Drop K-mer column
     partition_array=partition.drop(["Kmer"],axis=1)
 
-    #Define M' matrix of sources
-    M_prime=partition_array.values
-    M_prime.compute_chunk_sizes()
-    #M_prime=M_prime.persist()
-
+    #Define M_s matrix of sources
+    M_s=partition_array.values
+    M_s.compute_chunk_sizes()
     
-    print("Chunk sizes for the M_prime matrix were computed") 
+    print_status("Chunk sizes for the M_s matrix were computed") 
 
     #Create new vector for sink
     s_t=dd.read_table(path_sink,header=None,names=["pa"])
@@ -114,14 +125,14 @@ def main(argv=None):
     #Define s_t (vector of sink)
     s_t=s_t.persist()
 
-    #Labels for this LOO run
+    #Define list of labels for sources
     labels=[sorted_metadata["True_label"][x] for x in range(len(sources))]
 
     #Define matrix H (one hot-encoding of labels)
     H = da.from_array(pd.get_dummies(labels, columns=classes).values)
 
-    #Construct vector w (number of balls that go into each bin, see eq. 3 in paper)
-    w=np.matmul(np.matmul(s_t,M_prime),H)
+    #Construct vector w (number of balls that go into each bin, see eq. 2 in paper)
+    w=np.matmul(np.matmul(s_t,M_s),H)
     w=w.compute()
     w=pd.DataFrame(w,index=classes).transpose()
 
@@ -137,14 +148,15 @@ def main(argv=None):
     result=pd.concat([result,w])
     result[["p_Sediment/Soil","p_Skin","p_aOral","p_mOral","p_Unknown"]]=(result[["Sediment/Soil","Skin","aOral","mOral","Unknown"]]/total).values[0]
     result.to_csv(sink+"_OM_output.csv",index=False)
-    print("Sink " +sink+ " was analyzed in " + str(end-start))
+    print_status("Sink " +sink+ " was analyzed in " + str(np.round(end-start,4)) + " seconds")
     
     colors=['#636EFA', '#EF553B', '#00CC96', '#AB63FA']
+    
     #Plot results
-    if plot:
-        fig = px.bar(result, y=["p_aOral", "p_mOral","p_Sediment/Soil","p_Skin","p_Unknown"], color_discrete_sequence=px.colors.qualitative.G10, opacity=0.8, title="Proportions sink "+ sink)
+    if plot == True:
+        fig = px.histogram(result, x="Sink",y=["p_aOral", "p_mOral","p_Sediment/Soil","p_Skin","p_Unknown"], color_discrete_sequence=px.colors.qualitative.G10, opacity=0.9, title="Proportions sink "+ sink, barmode="stack")
         fig.update_layout(width=400,height=800)
-        fig.write_image("result_plot_"+sink+".pdf",width=400,height=800,scale=5)
+        fig.write_image("result_plot_"+sink+".pdf",width=400,height=800,scale=5,engine="kaleido")
     
     client.close()
 

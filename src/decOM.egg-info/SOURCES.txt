@@ -4,6 +4,8 @@ pyproject.toml
 setup.py
 src/decOM/__init__.py
 src/decOM/__main__.py
+src/decOM/__sink__.py
+src/decOM/__utils__.py
 src/decOM/__version__.py
 src/decOM.egg-info/PKG-INFO
 src/decOM.egg-info/SOURCES.txt
