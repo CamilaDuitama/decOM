@@ -51,10 +51,14 @@ tar -xf decOM_sources.tar.gz
 You can test if `decOM`  is working by using one of the aOral samples present in the `test/sample/` folder, ex: SRR13355787. 
 ```
 <<<<<<< HEAD
+<<<<<<< HEAD
 decOM -s SRR13355787 -p_sources decOM_sources/ -k SRR13355787_key.fof -mem 10GB -t 5 -o decOM_output/
 =======
 decOM -s SRR13355810 -p_sources decOM_sources/ -k sample/SRR13355810_key.fof -mem 10GB -t 5
 >>>>>>> b838f02 (Updated README.md and pipeline_version2.png)
+=======
+decOM -s SRR13355810 -p_sources decOM_sources/ -k SRR13355810_key.fof -mem 10GB -t 5
+>>>>>>> 2f5d45d (Update README.md)
 ```
 *Note*: The final memory allocated for each run of `decOM` will be your input in -mem times the number of cores. In the previous run we used 10GB * 5 = 50 GB.
 
@@ -143,5 +147,8 @@ optional arguments:
 
 
 ```
+<<<<<<< HEAD
 
 >>>>>>> b838f02 (Updated README.md and pipeline_version2.png)
+=======
+>>>>>>> 2f5d45d (Update README.md)
