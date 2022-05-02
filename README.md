@@ -52,6 +52,7 @@ You can test if `decOM`  is working by using one of the aOral samples present in
 ```
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 decOM -s SRR13355787 -p_sources decOM_sources/ -k SRR13355787_key.fof -mem 10GB -t 5 -o decOM_output/
 =======
 decOM -s SRR13355810 -p_sources decOM_sources/ -k sample/SRR13355810_key.fof -mem 10GB -t 5
@@ -59,6 +60,9 @@ decOM -s SRR13355810 -p_sources decOM_sources/ -k sample/SRR13355810_key.fof -me
 =======
 decOM -s SRR13355810 -p_sources decOM_sources/ -k SRR13355810_key.fof -mem 10GB -t 5
 >>>>>>> 2f5d45d (Update README.md)
+=======
+decOM -s SRR13355787 -p_sources decOM_sources/ -k SRR13355787_key.fof -mem 10GB -t 5
+>>>>>>> b4a22a0 (Update README.md)
 ```
 *Note*: The final memory allocated for each run of `decOM` will be your input in -mem times the number of cores. In the previous run we used 10GB * 5 = 50 GB.
 

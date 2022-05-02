@@ -4,6 +4,8 @@ tests/matrix_100.pa.txt
 .ipynb_checkpoints/
 tests/pa_bin/
 tests/decOM_sources*
+.DS_Store
+.idea/
 =======
 .ipynb_checkpoints
 >>>>>>> e89ccafba98234f26f5e51592277e554ff234ebd
