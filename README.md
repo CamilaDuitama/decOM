@@ -1,3 +1,4 @@
+
 # decOM: Microbial source tracking for contamination assessment of ancient oral samples using k-mer-based methods
 
 `decOM`  is a high-accuracy microbial source tracking method that is suitable for contamination quantification in paleogenomics, namely the analysis of collections of possibly contaminated ancient oral metagenomic data sets.
@@ -30,12 +31,20 @@ To make the ``decOM`` command available, it is advised to include the absolute p
 export PATH=/absolute/path/to/decOM:${PATH}
 ```
 
+## Before running decOM
+
+The users of OM can represent their own metagenomic sample as a presence/absence vector of k-mers using kmtricks, and compare this new sink against the collection of sources we have put together. This means that **before** running `decOM` you must first download the folder [ decOM_sources.tar.gz](https://zenodo.org/record/6511305/files/decOM_sources.tar.gz) and decompress it
+```
+wget https://zenodo.org/record/6511305/files/decOM_sources.tar.gz
+tar -xf decOM_sources.tar.gz
+```
+
 ## Test
-You can test if `decOM`  is working by using one of the aOral samples present in the test folder, ex: SRR13355810. 
+You can test if `decOM`  is working by using one of the aOral samples present in the `test/sample/` folder, ex: SRR13355787. 
 ```
-decOM -s SRR13355810 -p_sources tests/matrix_100.pa.txt -p_sink tests/SRR13355810_output/matrices/100.vec -p_missing tests/SRR13355810_output/counts/partition_100/SRR13355810_missing.txt -mem 50GB -t 10
+decOM -s SRR13355810 -p_sources decOM_sources/ -k sample/SRR13355810_key.fof -mem 10GB -t 5
 ```
-*Note*: The final memory allocated for each run of `decOM` will be your input in -mem times the number of cores. In the previous run we used 50GB * 10 = 500 GB.
+*Note*: The final memory allocated for each run of `decOM` will be your input in -mem times the number of cores. In the previous run we used 10GB * 5 = 50 GB.
 
 
 ## Output files
@@ -49,32 +58,38 @@ decOM -s SRR13355810 -p_sources tests/matrix_100.pa.txt -p_sink tests/SRR1335581
 
 You can input your a fastq/fasta file from your own experiment, you can find an ancient sample of interest from the [AncientMetagenomeDir](https://github.com/SPAAM-community/AncientMetagenomeDir) or from the [SRA](https://sra-explorer.info/).
 
-#TODO
+Once you have downloaded the folder with the matrix of sources  [ decOM_sources.tar.gz](https://zenodo.org/record/6511305/files/decOM_sources.tar.gz) , and your fastq file(s) of interest, you have to create a `key.fof` file per sample of interest, which from now one we will call sink (s). The `key.fof` has one line of text depending on your type of data:
+
+**- Paired-end :**
+	 `s : path/to/file/s_1.fastq.gz`
+
+**-  Single-end:**
+	`s : path/to/file/s_1.fastq.gz;  path/to/file/s_2.fastq.gz `
+
+As you now have the name and fastq file of sink (s), the folder with the matrix of sources and the key file simply run decOM as follows:
+
+```decOM -s s -p_sources decOM_sources/ -k s_key.fof -mem {mem} -t {t}```
 
 ## Command line options
 
 ```
-usage: decOM [-h] -s SINK -p_sources PATH_SOURCES -p_sink PATH_SINK -p_missing PATH_MISSING_KMERS -mem MEMORY -t THREADS [-p PLOT] [-V]
+usage: modules [-h] -s SINK -p_sources PATH_SOURCES -k KEY -mem MEMORY -t THREADS [-p PLOT] [-V]
 
-Mandatory arguments:
--s SINK, --sink SINK  Write down the name of your sink
--p_sources PATH_SOURCES, --path_sources PATH_SOURCES path to sources matrix. Ex: ./matrix_100.pa.txt
--p_sink PATH_SINK, --path_sink PATH_SINK Path to sink vector, the output of kmtricks filter Ex: ./kmtricks_output/matrices/100.vec
--p_missing PATH_MISSING_KMERS, --path_missing_kmers PATH_MISSING_KMERS Path to missing kmers, the output of kmtricks filter after using kmtricks aggregate Ex: ./kmtricks_output/count/{sink}_missing.txt
--mem MEMORY, --memory MEMORY Write down how much memory you want to use. Ex: 50GB
--t THREADS, --threads THREADS Number of threads to use. Ex: 10
+Microbial source tracking for contamination assessment of ancient oral samples using k-mer-based methods
 
+optional arguments:
+  -h, --help            show this help message and exit
+  -s SINK, --sink SINK  Write down the name of your sink
+  -p_sources PATH_SOURCES, --path_sources PATH_SOURCES
+                        path to folder downloaded from https://zenodo.org/record/6511305#.YnAq3i8RoUE
+  -k KEY, --key KEY     filtering key (a kmtricks fof with only one sample).
+  -mem MEMORY, --memory MEMORY
+                        Write down how much memory you want to use. Ex: 50GiB
+  -t THREADS, --threads THREADS
+                        Number of threads to use. Ex: 10
+  -p PLOT, --plot PLOT  True if you want a plot with the source proportions of the sink, else False
+  -V, --version         Show version number and exit
 
-Optional arguments:
--p PLOT, --plot PLOT  True if you want a plot with the source proportions of the sink, else False
-
-
-Other arguments:
--h, --help  show this help message and exit
--V, --version Show version number and exit
-Mandatory arguments:
 
 ```
-
-## Reference
 
