@@ -1,2 +1,6 @@
+<<<<<<< HEAD
 tests/matrix_100.pa.txt.lz4 filter=lfs diff=lfs merge=lfs -text
 tests/matrix_100.pa filter=lfs diff=lfs merge=lfs -text
+=======
+tests/matrix_100.pa*
+>>>>>>> e89ccafba98234f26f5e51592277e554ff234ebd
