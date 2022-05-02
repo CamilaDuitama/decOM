@@ -42,7 +42,7 @@ tar -xf decOM_sources.tar.gz
 ## Test
 You can test if `decOM`  is working by using one of the aOral samples present in the `test/sample/` folder, ex: SRR13355787. 
 ```
-decOM -s SRR13355810 -p_sources decOM_sources/ -k sample/SRR13355810_key.fof -mem 10GB -t 5
+decOM -s SRR13355810 -p_sources decOM_sources/ -k SRR13355810_key.fof -mem 10GB -t 5
 ```
 *Note*: The final memory allocated for each run of `decOM` will be your input in -mem times the number of cores. In the previous run we used 10GB * 5 = 50 GB.
 
@@ -92,4 +92,3 @@ optional arguments:
 
 
 ```
-
