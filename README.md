@@ -36,11 +36,13 @@ export PATH=/absolute/path/to/decOM:${PATH}
 
 ## Before running decOM
 
-**BEFORE** running `decOM` you must first download the folder [ decOM_sources.tar.gz](https://zenodo.org/record/6513520/files/decOM_sources.tar.gz) and decompress it
+**BEFORE** running `decOM` you must first download the folder [ decOM_sources.tar.gz](https://zenodo.org/record/6513520/files/decOM_sources.tar.gz) and decompress it. You can either follow the link or use wget (it has to be installed in your computer first):
 ```
 wget https://zenodo.org/record/6513520/files/decOM_sources.tar.gz
 tar -xf decOM_sources.tar.gz
-```
+
+``` 
+If you did not use wget to download the matrix of sources and instead followed the link, make sure you know where the path to your file is and type it accordingly in the upcoming commands.
 
 ## Test
 You can test if `decOM`  is working by using one of the aOral samples present in the `test/sample/` folder, ex: SRR13355787. 
