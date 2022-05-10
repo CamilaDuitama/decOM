@@ -51,7 +51,7 @@ decOM -s SRR13355787 -p_sources decOM_sources/ -k tests/sample/SRR13355787.fof -
 
 
 ## Output files
-`decOM` will output one .csv file with the k-mer counts and proportions, a folder with the vector representing the sink(s) and a barplot if indicated by the user
+`decOM` will output one .csv file with the k-mer counts and proportions, a folder with the vector representing the sample of interest, from now on called sink (s), and a barplot if indicated by the user.
 
 ```
 decOM_output/
@@ -62,7 +62,7 @@ decOM_output/
 ## Example
 
 You can use as input your fastq/fasta file from your own experiment, you can download an ancient oral sample of interest from the [AncientMetagenomeDir](https://github.com/SPAAM-community/AncientMetagenomeDir) or from the [SRA](https://sra-explorer.info/).
-The users of `decOM` can represent their own metagenomic sample as a presence/absence vector of k-mers using kmtricks. This sample of interest (from now on called sink) can be compared against the collection of sources we have put together.
+The users of `decOM` can represent their own metagenomic sample as a presence/absence vector of k-mers using kmtricks. This sink can be compared against the collection of sources we have put together.
 
 Once you have downloaded the folder with the [matrix of sources](#before-running-decom) and the fastq file(s) of your sink(s), you have to create a `key.fof` file per sink. 
 The `key.fof` has one line of text depending on your type of data:
