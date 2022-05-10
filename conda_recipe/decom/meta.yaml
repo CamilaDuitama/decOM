@@ -1,53 +1,47 @@
-{% set name = "decOM" %}
-{% set version = "0.0.14" %}
+{% set name = "decom" %}
+{% set version = "0.0.17" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: e800149dcd19311923b842a56c52c345266115b26509f4b5bf52afaa50c1de53
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/decOM-{{ version }}.tar.gz
+  sha256: 332e16d66dd7b65d390f245802da19f525d25818d8d20b6a95613f9b56f5947d
 
 build:
-  number: 0
   entry_points:
     - decOM=decOM.__main__:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
 
 requirements:
   host:
-    - dask >=2021.12.0
-    - importlib_resources >=5.4.0
-    - python-kaleido
     - pip
-    - plotly >=5.5.0
-    - python
-    - kmtricks >=1.2.1
+    - python >=3.6
   run:
-    - dask >=2021.12.0
-    - importlib_resources >=5.4.0
+    - dask-core >=2021.12.0
+    - importlib-resources >=5.4.0
     - python-kaleido
     - plotly >=5.5.0
-    - python
-    - kmtricks >=1.2.1
+    - python >=3.6
 
 test:
   imports:
     - decOM
-    - decOM.data
   commands:
+    - pip check
     - decOM --help
+  requires:
+    - pip
 
 about:
-  home: "https://github.com/CamilaDuitama/decOM"
-  license: MIT
-  license_family: MIT
-  license_file: 
-  summary: "decOM: K-mer method for aOral metagenome decontamination"
-  doc_url: 
-  dev_url: 
+  home: https://github.com/CamilaDuitama/decOM
+  summary: 'decOM: K-mer method for aOral metagenome decontamination'
+  license: GPL-2.0
+  license_file: LICENSE
 
 extra:
   recipe-maintainers:
-    - #33686652
+    - CamilaDuitama

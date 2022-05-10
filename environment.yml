@@ -1,0 +1,12 @@
+name: decOM
+channels:
+  - conda-forge
+  - defaults
+  - tlemane
+dependencies:
+  - numpy
+  - pandas
+  - plotly
+  - dask
+  - kmtricks
+  - decom

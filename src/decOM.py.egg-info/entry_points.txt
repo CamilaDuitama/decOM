@@ -1,0 +1,2 @@
+[console_scripts]
+decOM = decOM.main:main
