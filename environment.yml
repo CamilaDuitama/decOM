@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - defaults
   - tlemane
+  - camiladuitama
 dependencies:
   - numpy
   - pandas
