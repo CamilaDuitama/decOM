@@ -1,16 +1,15 @@
-<<<<<<< HEAD
 dask-worker-space/
-tests/matrix_100.pa.txt
 .ipynb_checkpoints/
 tests/pa_bin/
-<<<<<<< HEAD
-tests/decOM_sources*
 .DS_Store
 .idea/
-=======
+decOM_output/
 tests/decOM_sources/
 tests/decOM_sources.tar.gz
->>>>>>> 47b364d (add DS_stor folder)
-=======
+tests/decOM_output/
+tests/several_samples_output
+tests/several_samples/wrong.txt
+tests/several_samples/empty.txt
+tests/several_samples/duplicated.txt
 .ipynb_checkpoints
->>>>>>> e89ccafba98234f26f5e51592277e554ff234ebd
+

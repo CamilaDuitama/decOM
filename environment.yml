@@ -5,6 +5,7 @@ channels:
   - tlemane
   - camiladuitama
 dependencies:
+  - colorama
   - numpy
   - pandas
   - plotly
