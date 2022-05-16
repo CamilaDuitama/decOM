@@ -3,6 +3,7 @@ dask-worker-space/
 tests/pa_bin/
 .DS_Store
 .idea/
+decOM.log
 decOM_output/
 tests/decOM_sources/
 tests/decOM_sources.tar.gz
