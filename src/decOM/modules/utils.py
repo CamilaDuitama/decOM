@@ -39,7 +39,7 @@ def check_input(sink, p_sinks, p_sources, key, p_keys, t, plot, output, mem):
 
     # Check if folder with sources was downloaded
     if not os.path.isdir(p_sources):
-        print_error("Path to matrix of sources is incorrect or you have not downloaded matrix of sources")
+        print_error("Path to matrix of sources is incorrect or have not downloaded matrix of sources.")
         return 1
 
     # If user only has one sink
@@ -57,33 +57,40 @@ def check_input(sink, p_sinks, p_sources, key, p_keys, t, plot, output, mem):
             return 1
 
     elif sink == None:
-        sinks = open(p_sinks).read().splitlines()
-        try:
-            p_sinks[-4:] == ".txt"
+        if os.path.isfile(p_sinks):
+            sinks = open(p_sinks).read().splitlines()
+            try:
+                p_sinks[-4:] == ".txt"
 
-            if len(sinks) == 1:
-                print_error("Make sure your p_sinks file is correctly formatted. It should be a .txt file delimited "
-                            "by newline (\\n)")
+                if len(sinks) == 1:
+                    print_error("Make sure your p_sinks file is correctly formatted. It should be a .txt file delimited "
+                                "by newline (\\n)")
+                    return 1
+
+                elif len(sinks) == 0:
+                    print_error("Your p_sinks file is empty.")
+                    return 1
+            except:
+                print_error("File extension of p_sinks is not .txt")
                 return 1
 
-            elif len(sinks) == 0:
-                print_error("Your p_sinks file is empty.")
+            if len(sinks) > len(set(sinks)):
+                print_error("The p_sinks file has duplicated sinks")
                 return 1
-        except:
-            print_error("File extension of p_sinks is not .txt")
+        else:
+            print_error(".txt file p_sinks does not exist")
             return 1
-
-        if len(sinks) > len(set(sinks)):
-            print_error("The p_sinks file has duplicated sinks")
-            return 1
-
         # Add / to p_keys directory if not added by the user
         if p_keys[-1] != "/":
             p_keys = p_keys + "/"
 
+        if not os.path.isdir(p_keys):
+            print_error("p_keys directory does not exist")
+            return 1
+
         for s in sinks:
             if os.path.isfile(p_keys + s + ".fof") == False:
-                print_error("key.fof file for sink " + s + " does not exist in p_keys or extension is incorrect")
+                print_error("key.fof file for sink " + s + " does not exist in p_keys directory or extension is incorrect")
                 return 1
 
     # Check number of processes

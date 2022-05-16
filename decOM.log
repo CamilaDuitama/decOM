@@ -1,7 +1,0 @@
-[2022-05-14 16:30:22] [[33mwarning[0m] -plot parameter has been set to True
-[2022-05-14 16:30:22] [[32mstatus[0m] Starting decOM version: 1.0
-[2022-05-14 16:30:29] [[32mstatus[0m] Sink vector for SRR13355807 was created
-[2022-05-14 16:30:32] [[32mstatus[0m] Client was set
-[2022-05-14 16:30:32] [[32mstatus[0m] <Client: 'tcp://127.0.0.1:58656' processes=10 threads=10, memory=93.13 GiB>
-[2022-05-14 16:33:33] [[32mstatus[0m] Chunk sizes for the M_s matrix were computed
-[2022-05-14 16:37:11] [[32mstatus[0m] Contamination assessment for sink SRR13355807 was finished.

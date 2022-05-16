@@ -122,36 +122,35 @@ def main():
         else:
             print_status("Sink vector for " + sink + " was created")
 
-
-        # Initialize dask
-        cluster = LocalCluster(memory_limit=mem, n_workers=int(t))
-        client = Client(cluster)
-        print_status("Client was set")
-        print_status(client)
-
-        # Load metadata from sources
-        metadata = pd.read_csv(resources + "/metadata.csv")
-
-        # Load run accession codes for sources from k-mer matrix .fof files
-        colnames = pd.read_csv(resources + "/kmtricks.fof", sep=" : ",
-                               header=None, names=["Run_accession", "to_drop"], engine="python")
-        colnames.drop(columns="to_drop", inplace=True)
-
-        # Parse sources and classes
-        sources = list(colnames["Run_accession"])
-        classes = sorted(list(set(metadata["True_label"])))
-
-        # Sort metadata according to column order in matrix DataFrame
-        sorted_metadata = pd.DataFrame(columns=metadata.columns)
-        for j in sources:
-            sorted_metadata = pd.concat([sorted_metadata, metadata[metadata["Run_accession"] == j]])
-        sorted_metadata.reset_index(drop=True, inplace=True)
-
-        # Build result dataframe
-        result = pd.DataFrame(columns=classes + ["Unknown", "Running time", "Sink"])
-
-        # Start using dask:
         try:
+            # Initialize dask
+            cluster = LocalCluster(memory_limit=mem, n_workers=int(t))
+            client = Client(cluster)
+            print_status("Client was set")
+            print_status(client)
+
+            # Load metadata from sources
+            metadata = pd.read_csv(resources + "/metadata.csv")
+
+            # Load run accession codes for sources from k-mer matrix .fof files
+            colnames = pd.read_csv(resources + "/kmtricks.fof", sep=" : ",
+                                   header=None, names=["Run_accession", "to_drop"], engine="python")
+            colnames.drop(columns="to_drop", inplace=True)
+
+            # Parse sources and classes
+            sources = list(colnames["Run_accession"])
+            classes = sorted(list(set(metadata["True_label"])))
+
+            # Sort metadata according to column order in matrix DataFrame
+            sorted_metadata = pd.DataFrame(columns=metadata.columns)
+            for j in sources:
+                sorted_metadata = pd.concat([sorted_metadata, metadata[metadata["Run_accession"] == j]])
+            sorted_metadata.reset_index(drop=True, inplace=True)
+
+            # Build result dataframe
+            result = pd.DataFrame(columns=classes + ["Unknown", "Running time (s)", "Sink"])
+
+            # Start using dask:
             # Load k-mer matrix of sources as dataframe
             partition = dd.read_table(p_sources + "matrices/matrix_100.pa.txt", header=None, sep=" ",
                                       names=["Kmer"] + list(colnames["Run_accession"]))
@@ -193,10 +192,10 @@ def main():
             w["Sink"] = [sink]
             c_classes = classes + ["Unknown"]
             end = time.time()
-            w["Running time"] = [np.round(end - start, decimals=4)]
+            w["Running time (s)"] = [np.round(end - start, decimals=4)]
             result = pd.concat([result, w])
             result[["p_" + c for c in c_classes]] = result.apply(find_proportions, classes=c_classes, axis=1)
-            result.to_csv(output + "OM_output.csv", index=False)
+            result.to_csv(output + "decOM_output.csv", index=False)
             print_status("Contamination assessment for sink " + sink + " was finished.")
 
             # Plot results
@@ -205,7 +204,6 @@ def main():
 
         except Exception as e:
             print_error(e)
-            print_error("You did not assign enough memory or threads to your task.")
 
         finally:
             client.close();
@@ -243,7 +241,7 @@ def main():
         sorted_metadata.reset_index(drop=True, inplace=True)
 
         # Build result dataframe
-        result = pd.DataFrame(columns=classes + ["Unknown", "Running time", "Sink"])
+        result = pd.DataFrame(columns=classes + ["Unknown", "Running time (s)", "Sink"])
 
         # Start using dask
 
@@ -308,12 +306,12 @@ def main():
                 w["Sink"] = [s]
                 end_sink = time.time()
                 time_sink = end_sink - start_sink
-                w["Running time"] = np.round(time_sink, decimals=4)
+                w["Running time (s)"] = np.round(time_sink, decimals=4)
                 result = pd.concat([result, w])
                 print_status("Contamination assessment for sink " + s + " was finished.")
             c_classes = classes + ["Unknown"]
             result[["p_" + c for c in c_classes]] = result.apply(find_proportions, classes=c_classes, axis=1)
-            result.to_csv(output + "OM_output.csv", index=False)
+            result.to_csv(output + "decOM_output.csv", index=False)
             end = time.time()
             print_status("Sinks were analyzed in " + str(np.round(end - start, decimals=4)) + " seconds")
 
@@ -323,7 +321,6 @@ def main():
 
         except Exception as e:
             print_error(e)
-            print_error("You did not assign enough memory and/or threads to your task.")
 
         finally:
             client.close();

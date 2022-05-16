@@ -60,11 +60,12 @@ If you did not use wget to download the matrix of sources and instead followed t
   
 ## Test  
 ### One sink
+
 You can test if `decOM` is working by using the aOral sample present in the `test/sample/` folder, ex: SRR13355807.   
 ```  
 decOM -s SRR13355807 -p_sources decOM_sources/ -k tests/sample/SRR13355807.fof -mem 10GB -t 5 
 ```  
-*Note*: The final memory allocated for each run of `decOM` will be your input in -mem times the number of cores. In the previous run we used 10GB * 5 = 50 GB.  
+*Note*: The final memory allocated for each run of `decOM` will be your input in `-mem` times the number of cores (`-t`). In the previous run we used 10GB * 5 = 50 GB. It is recommended to run `decOM` with at least 10GB of memory and 1 core.
 
 ### Several sinks
 You can test if `decOM` with several sinks by using the files inside `test/several_samples/` as follows: 
@@ -79,11 +80,22 @@ decOM -p_sources decOM_sources/ -p_sinks tests/several_samples/sinks.txt -p_keys
   
 ```  
 decOM_output/  
-├──{s}_OM_output.csv 
-├──result_plot_{s}.pdf 
-├──result_plot_{s}.html 
+├──decOM_output.csv 
+├──result_plot_sinks.pdf 
+├──result_plot_sinks.html 
 ├──{s}_vector/  
 ```  
+The `decOM_output.csv` file is a dataframe that contains one row per sink. The columns correspond to the raw number of k-mers per source environment, 
+the running time per sink, the sink name and the proportions. The result for the one sample explained before should look like this:
+
+
+| Sediment/Soil | Skin | aOral | mOral | Unknown | Running time (s) | Sink | p_Sediment/Soil | p_Skin | p_aOral | p_mOral | p_Unknown |
+| :----: | :----: | :----: | :----: | :----: |:----------------:| :----: | :----: | :----: | :----: | :----: | :----: | 
+| 182 | 281 | 197859 | 37023 | 334 |196.7268| SRR13355807 | 0.0772 | 0.1192 | 83.9527 | 15.7091 | 0.1417 |
+
+The `result_plot_sinks.pdf`and `result_plot_sinks.html`are static and interactive plots (respectively) for the proportions of source environments per sink.
+The `{s}_vector/` folder is the output of kmtricks filter + kmtricks aggregate.
+
 ## Example  
   
 You can use as input your fastq/fasta file from your own experiment, you can download an ancient oral sample of interest from the [AncientMetagenomeDir](https://github.com/SPAAM-community/AncientMetagenomeDir) or from the [SRA](https://sra-explorer.info/).  
@@ -108,7 +120,7 @@ Since you now have the fasta/fastq file of your sink, the folder with the matrix
 ```decOM -s {SINK} -p_sources decOM_sources/ -k {KEY.FOF} -mem {MEMORY} -t {THREADS}```  
 
 ### Several sinks
-If you want to assess the contamination of several sinks, you need one `key.fof` file per sink, and they must be inside the folder `p_sources
+If you want to assess the contamination of several sinks, you need one `key.fof` file per sink, and they must be inside the folder `p_sources`
 ```decOM -p_sinks {PATH_SINKS} -p_sources decOM_sources/ -p_keys {PATH_KEYS} -mem {MEMORY} -t {THREADS}```    
 ## Command line options  
   
