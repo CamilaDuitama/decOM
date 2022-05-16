@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="decOM",
-    version="0.0.19",
+    version="0.0.20",
     author="Camila Duitama González",
     author_email="cduitama@pasteur.fr",
     description="decOM: K-mer method for aOral metagenome decontamination",
