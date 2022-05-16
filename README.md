@@ -58,7 +58,7 @@ You can test if `decOM` with several sinks by using the files inside `test/sever
 decOM -p_sources decOM_sources/ -p_sinks tests/several_samples/sinks.txt -p_keys tests/several_samples/ -mem 10GB -t 5 
 ```  
 
-`decOM`relies on `DASK` for parallelization. If you'd like to see the [diagnostic dashboard](https://docs.dask.org/en/stable/dashboard.html) to follow the process and better tune parameters such as `-mem `and `-t`, make sure you can connect to your local host and visualise it here: http://127.0.0.1:8787/status 
+`decOM`relies on `DASK` for parallelization. Once you start running `decOM`and the client is set, you can see the [diagnostic dashboard](https://docs.dask.org/en/stable/dashboard.html) to follow the process and better tune parameters such as `-mem `and `-t`, make sure you can connect to your local host and visualise it here: http://127.0.0.1:8787/status 
   
 ## Output files  
 `decOM` will output one .csv file with the k-mer counts and proportions, a folder with the vector representing the sample of interest, from now on called sink (s), and a barplot if indicated by the user.  
