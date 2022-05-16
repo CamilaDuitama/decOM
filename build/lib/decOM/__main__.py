@@ -330,7 +330,7 @@ def main():
 
 
 if __name__ == "__main__":
-    if os.path.isfile('decOM.log'):
+    if os.path.isfile(os.path.relpath("decOM.log")):
         remove_files('decOm.log')
     open('decOM.log', 'w')
     sys.exit(main())

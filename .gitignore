@@ -7,7 +7,7 @@ decOM.log
 decOM_output/
 tests/decOM_sources/
 tests/decOM_sources.tar.gz
-tests/decOM_output/
+tests/decOM_output*
 tests/several_samples_output
 tests/several_samples/wrong.txt
 tests/several_samples/empty.txt
