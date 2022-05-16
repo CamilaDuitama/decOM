@@ -106,6 +106,7 @@ Since you now have the fasta/fastq file of your sink, the folder with the matrix
 
 ### Several sinks
 If you want to assess the contamination of several sinks, you need one `key.fof` file per sink, and they must be inside the folder `p_sources`
+
 ```decOM -p_sinks {PATH_SINKS} -p_sources decOM_sources/ -p_keys {PATH_KEYS} -mem {MEMORY} -t {THREADS}```    
 ## Command line options  
   
