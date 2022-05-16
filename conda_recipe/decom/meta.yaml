@@ -1,5 +1,5 @@
 {% set name = "decOM" %}
-{% set version = "0.0.18" %}
+{% set version = "0.0.20" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: f976a9b79e8810ee6609a93d1b09b835bd76b5aba82a1752c24e7fabdbc385c8
+  sha256: 12992dc1797e8d352e6b561d82bfb40542033a95c74acd3fd378691d3ce29744
 
 build:
   number: 0
@@ -17,20 +17,21 @@ build:
 
 requirements:
   host:
+    - colorama
     - dask >=2021.12.0
     - importlib_resources >=5.4.0
     - python-kaleido
     - pip
     - plotly >=5.5.0
     - python
-    - colorama
   run:
+    - colorama
     - dask >=2021.12.0
     - importlib_resources >=5.4.0
     - python-kaleido
     - plotly >=5.5.0
     - python
-    - colorama
+
 test:
   imports:
     - decOM
