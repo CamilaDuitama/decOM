@@ -88,11 +88,11 @@ The users of `decOM` can represent their own metagenomic sample as a presence/ab
   
 Once you have downloaded the folder with the [matrix of sources](#before-running-decom) and the fastq file(s) of your sink(s), you have to create a `key.fof` file per sink.   
 The `key.fof` has one line of text depending on your type of data:  
-  
-**-Paired-end :**  
+
+**-Single-end:**  
  `s : path/to/file/s_1.fastq.gz`  
   
-**-Single-end:**  
+**-Paired-end :**  
  `s : path/to/file/s_1.fastq.gz;  path/to/file/s_2.fastq.gz `  
   
 *Note*: As `decOM` relies on [`kmtricks`](https://github.com/tlemane/kmtricks), you might use a FASTA or FASTQ format, gzipped or not.   
