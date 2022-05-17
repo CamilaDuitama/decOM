@@ -95,19 +95,20 @@ The `key.fof` has one line of text depending on your type of data:
 **-Paired-end :**  
  `s : path/to/file/s_1.fastq.gz;  path/to/file/s_2.fastq.gz `  
   
-*Note*: As `decOM` relies on [`kmtricks`](https://github.com/tlemane/kmtricks), you might use a FASTA or FASTQ format, gzipped or not.   
-Which means you have to change the `key.fof` file accordingly.  
+*Note*: As `decOM` relies on [`kmtricks`](https://github.com/tlemane/kmtricks), you might use a FASTA or FASTQ format, gzipped or not, which means you have to change the `key.fof` file accordingly.  
   
 Since you now have the fasta/fastq file of your sink, the folder with the matrix of sources and the key file, simply run decOM as follows:  
 
 ### Single sink
-  
+
 ```decOM -s {SINK} -p_sources decOM_sources/ -k {KEY.FOF} -mem {MEMORY} -t {THREADS}```  
 
 ### Several sinks
+
 If you want to assess the contamination of several sinks, you need one `key.fof` file per sink, and they must be inside the folder `p_sources`
 
-```decOM -p_sinks {PATH_SINKS} -p_sources decOM_sources/ -p_keys {PATH_KEYS} -mem {MEMORY} -t {THREADS}```    
+```decOM -p_sinks {PATH_SINKS} -p_sources decOM_sources/ -p_keys {PATH_KEYS} -mem {MEMORY} -t {THREADS}```   
+
 ## Command line options  
   
 ```  
