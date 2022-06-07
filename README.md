@@ -25,7 +25,7 @@ Install `decOM` through conda:
 ```  
 git clone https://github.com/CamilaDuitama/decOM.git  
 cd decOM  
-conda env create -n decOM --file environment.yml  
+conda env create -n decOM-dev --file environment.yml  
 conda deactivate
 conda activate decOM  
 ```  
@@ -37,10 +37,10 @@ export PATH=/absolute/path/to/decOM:${PATH}
   
 ## Before running decOM  
   
-**BEFORE** running `decOM` you must first download the folder [ decOM_sources.tar.gz](https://zenodo.org/record/6513520/files/decOM_sources.tar.gz) and decompress it. You can either follow the link or use wget (it has to be installed in your computer first):  
+**BEFORE** running `decOM` you must first download the folder [ decOM_sources.tar.gz](https://zenodo.org/record/6620731/files/no_aOral_as_sources.tar.gz) and decompress it. You can either follow the link or use wget (it has to be installed in your computer first):  
 ```  
-wget https://zenodo.org/record/6513520/files/decOM_sources.tar.gz  
-tar -xf decOM_sources.tar.gz
+wget https://zenodo.org/record/6620731/files/no_aOral_as_sources.tar.gz 
+tar -xf no_aOral_as_sources.tar.gz
 ```  
 If you did not use wget to download the matrix of sources and instead followed the link, make sure you know where the path to your file is and type it accordingly in the upcoming commands whenever `p_sources` is needed. 
   
@@ -59,7 +59,7 @@ You can test if `decOM` with several sinks by using the files inside `test/sever
 decOM -p_sources decOM_sources/ -p_sinks tests/several_samples/sinks.txt -p_keys tests/several_samples/ -mem 10GB -t 5 
 ```  
 
-`decOM`relies on `DASK` for parallelization. Once you start running `decOM`and the client is set, you can see the [diagnostic dashboard](https://docs.dask.org/en/stable/dashboard.html) to follow the process and better tune parameters such as `-mem `and `-t`, make sure you can connect to your local host and visualise it here: http://127.0.0.1:8787/status 
+`decOM`relies on `DASK` for parallelization. Once you start running `decOM` and the client is set, you can see the [diagnostic dashboard](https://docs.dask.org/en/stable/dashboard.html) to follow the process and better tune parameters such as `-mem `and `-t`, make sure you can connect to your local host and visualise it here: http://127.0.0.1:8787/status 
   
 ## Output files  
 `decOM` will output one .csv file with the k-mer counts and proportions, a folder with the vector representing the sample of interest, from now on called sink (s), and a barplot if indicated by the user.  

@@ -11,4 +11,3 @@ dependencies:
   - plotly
   - dask
   - kmtricks
-  - decom
