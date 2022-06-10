@@ -1,2 +1,3 @@
 [console_scripts]
 decOM = decOM.__main__:main
+

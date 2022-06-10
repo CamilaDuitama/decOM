@@ -11,3 +11,6 @@ dependencies:
   - plotly
   - dask
   - kmtricks
+  - importlib_resources
+  - argparse
+

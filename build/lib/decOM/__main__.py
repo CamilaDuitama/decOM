@@ -46,7 +46,7 @@ def main():
                               help=".txt file with a list of sinks limited by a newline (\\n).  "
                                    "When this argument is set, -p_keys/--path_keys must be defined too.")
     parser.add_argument("-p_sources", "--path_sources", dest='PATH_SOURCES',
-                        help="path to folder downloaded from https://zenodo.org/record/6513520/files/decOM_sources"
+                        help="path to folder downloaded from https://zenodo.org/record/6620731/files/no_aOral_as_sources.tar.gz"
                              ".tar.gz",
                         required=True)
     keys_parser.add_argument("-k", "--key", dest='KEY', help="filtering key (a kmtricks fof with only one sample). "
@@ -331,6 +331,6 @@ def main():
 
 if __name__ == "__main__":
     if os.path.isfile(os.path.relpath("decOM.log")):
-        remove_files('decOm.log')
+        remove_files('decOM.log')
     open('decOM.log', 'w')
     sys.exit(main())

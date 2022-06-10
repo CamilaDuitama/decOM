@@ -27,7 +27,7 @@ git clone https://github.com/CamilaDuitama/decOM.git
 cd decOM  
 conda env create -n decOM-dev --file environment.yml  
 conda deactivate
-conda activate decOM  
+conda activate decOM-dev 
 ```  
 To make the ``decOM`` command available, it is advised to include the absolute path of `decOM` in your PATH environment variable by adding the following line to your `~/.bashrc` file:  
   
