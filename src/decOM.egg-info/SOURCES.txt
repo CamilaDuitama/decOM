@@ -11,9 +11,17 @@ src/decOM.egg-info/dependency_links.txt
 src/decOM.egg-info/entry_points.txt
 src/decOM.egg-info/requires.txt
 src/decOM.egg-info/top_level.txt
+src/decOM/aOralOut/__init__.py
+src/decOM/aOralOut/__main__.py
 src/decOM/data/__init__.py
+src/decOM/data/aOralOut_kmtricks.fof
+src/decOM/data/aOralOut_metadata.csv
 src/decOM/data/kmtricks.fof
 src/decOM/data/metadata.csv
+src/decOM/format/__init__.py
+src/decOM/format/__main__.py
 src/decOM/modules/__init__.py
 src/decOM/modules/sink.py
 src/decOM/modules/utils.py
+src/test/__init__.py
+src/test/test_pytest.py

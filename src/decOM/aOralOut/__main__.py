@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-
+import time
 from importlib_resources import files
 import argparse
 import plotly.io as pio
 from decOM import data
 from decOM.__version__ import __version__
 from decOM.modules.utils import *
-from decOM.modules.sink import * 
+from decOM.modules.sink import *
 from pathlib import Path
-
 
 pio.renderers.default = 'iframe'
 decOM_root = os.path.dirname(os.path.abspath(os.path.realpath(os.__file__)))
@@ -22,13 +21,15 @@ def _version():
         decOM_version += f'-{git_hash}'
     return decOM_version
 
+
 def main():
     remove_files(str(Path.cwd())+"/decOM.log")
+
     # Set path to resources
     resources = str(files(data))
 
     # Parser
-    parser = argparse.ArgumentParser(prog="decOM",
+    parser = argparse.ArgumentParser(prog="decOM-aOralOut",
                                      description="Microbial source tracking for contamination assessment of ancient "
                                                  "oral samples using k-mer-based methods",
                                      add_help=True)
@@ -44,8 +45,7 @@ def main():
                               help=".txt file with a list of sinks limited by a newline (\\n).  "
                                    "When this argument is set, -p_keys/--path_keys must be defined too.")
     parser.add_argument("-p_sources", "--path_sources", dest='PATH_SOURCES',
-                        help="path to folder downloaded from https://zenodo.org/record/6513520/files/decOM_sources"
-                             ".tar.gz",
+                        help="path to folder downloaded from https://zenodo.org/record/6772124/files/aOralOut_sources.tar.gz",
                         required=True)
     keys_parser.add_argument("-k", "--key", dest='KEY', help="filtering key (a kmtricks fof with only one sample). "
                                                              "When this argument is set, -s/--sink must be defined too.")
@@ -94,23 +94,22 @@ def main():
     output = args.OUTPUT
 
     # Check user input is correct
-    checked_input = check_input(sink, p_sinks, p_sources, key, p_keys, t, plot, output, mem, default = True)
+    checked_input = check_input(sink, p_sinks, p_sources, key, p_keys, t, plot, output, mem, default = False)
     if checked_input == 1:
         return 1
     else:
         sink, p_sinks, p_sources, key, p_keys, t, plot, output, mem = checked_input
 
-
-
     print_status("Starting decOM version: " + str(_version()))
+    print_status("aOralOut feature of decOM has started")
 
     #One sink to analyse only
     if sink is not None:
-        return one_sink(sink, p_sinks, p_sources, key, t, plot, output, mem, resources, default=True)
+        return one_sink(sink, p_sinks, p_sources, key, t, plot, output, mem, resources, default=False)
 
     #If user has several sinks  
     elif p_sinks is not None:
-        return several_sinks(sink, p_sinks, p_sources, p_keys, t, plot, output, mem, resources ,default=True)
+        return several_sinks(sink, p_sinks, p_sources, p_keys, t, plot, output, mem, resources ,default=False)
 
 if __name__ == "__main__":
     try:

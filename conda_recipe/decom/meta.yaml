@@ -1,5 +1,5 @@
 {% set name = "decOM" %}
-{% set version = "0.0.20" %}
+{% set version = "0.0.25" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,14 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 12992dc1797e8d352e6b561d82bfb40542033a95c74acd3fd378691d3ce29744
+  sha256: e8d8f76822c6f631c3ed10016193ad01a2b86ab31c6929b6af1fdfa1d3989efa
 
 build:
   number: 0
   entry_points:
-    - decOM=decOM.__main__:main
+    - decOM = decOM.__main__:main
+    - decOM-aOralOut = decOM.aOralOut.__main__:main
+    - decOM-format = decOM.format.__main__:main
   script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
@@ -35,20 +37,25 @@ requirements:
 test:
   imports:
     - decOM
+    - decOM.aOralOut
     - decOM.data
+    - decOM.format
     - decOM.modules
+    - test
   commands:
     - decOM --help
+    - decOM-aOralOut --help
+    - decOM-format --help
 
 about:
   home: "https://github.com/CamilaDuitama/decOM"
   license: MIT
   license_family: MIT
   license_file: 
-  summary: "decOM: K-mer method for aOral metagenome decontamination"
+  summary: "decOM: Similarity-based microbial source tracking for contamination assessment of ancient oral samples using k-mer-based methods"
   doc_url: 
   dev_url: 
 
 extra:
   recipe-maintainers:
-    - CamilaDuitama
+    - your-github-id-here

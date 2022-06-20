@@ -1,0 +1,1 @@
+#SampleID	SourceSink	Envs9	source	sewages8	source	sewages3	sink	pond1s2	sink	pond2s1	sink	pond3s0	sink	pond4s7	source	drainwaters6	sink	pond5s5	source	seawaters4	source	seawater

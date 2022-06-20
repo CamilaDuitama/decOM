@@ -1,0 +1,1 @@
+mock_oral_sim_s : tests/synthetic/mock_oral_sim_s_1.fastq.gz ; tests/synthetic/mock_oral_sim_s_2.fastq.gz

@@ -5,10 +5,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="decOM",
-    version="0.0.20",
+    version="0.0.25",
     author="Camila Duitama González",
     author_email="cduitama@pasteur.fr",
-    description="decOM: K-mer method for aOral metagenome decontamination",
+    description="decOM: Similarity-based microbial source tracking for contamination assessment of ancient oral samples using k-mer-based methods",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/CamilaDuitama/decOM",
@@ -34,7 +34,9 @@ setuptools.setup(
     package_data={'': ['data/*']},
     entry_points={
         'console_scripts': [
-            'decOM=decOM.__main__:main',
-        ],
+            'decOM = decOM.__main__:main',
+            'decOM-aOralOut = decOM.aOralOut.__main__:main',
+            'decOM-format = decOM.format.__main__:main',
+            ],
     },
 )

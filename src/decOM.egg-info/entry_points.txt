@@ -1,2 +1,4 @@
 [console_scripts]
 decOM = decOM.__main__:main
+decOM-aOralOut = decOM.aOralOut.__main__:main
+decOM-format = decOM.format.__main__:main
