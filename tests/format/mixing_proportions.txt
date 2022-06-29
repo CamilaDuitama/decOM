@@ -1,6 +1,0 @@
-	ERR1474568
-Sediment/Soil	0.0145
-Skin	0.0211
-aOral	0.0238
-mOral	0.928
-Unknown	0.0126
