@@ -43,7 +43,7 @@ export PATH=/absolute/path/to/decOM:${PATH}
 wget https://zenodo.org/record/6513520/files/decOM_sources.tar.gz  
 tar -xf decOM_sources.tar.gz
 ```  
-If you did not use wget to download the matrix of sources and instead followed the link, make sure you know where the path to your file is and type it accordingly in the upcoming commands whenever `p_sources` is needed. 
+The path of the extracted directory `decOM_sources` will be requested through the input parameter `-p_sources` each time `decOM` is run (see examples below).
   
 ## Test  
 ### One sink
