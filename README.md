@@ -129,13 +129,13 @@ s_n
 And the content of `p_keys` should be:
 ```  
 p_keys/  
-├──s_1_key.fof
-├──s_2_key.fof
-├──s_3_key.fof
+├──s_1.fof
+├──s_2.fof
+├──s_3.fof
 .
 .
 .
-├──s_n_key.fof 
+├──s_n.fof 
 ```  
 
 ## Additional features 
