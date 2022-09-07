@@ -83,6 +83,8 @@ the running time per sink, the sink name and the proportions. The result for the
 The `result_plot_sinks.pdf` and `result_plot_sinks.html` are static and interactive plots (respectively) for the proportions of source environments per sink.
 The `{s}_vector/` folder is the output of kmtricks filter + kmtricks aggregate.
 
+> **UNKOWNS IS A FEATURE IN DEVELOPMENT!**: The contribution of an unnknown source is a feature in development. For a more accurate assessment of the contamination proportions in a sample, please take into account the raw counts for Sediment/Soil, Skin, aOral, mOral.
+
 ## Usage  
   
 You can use as input your fastq/fasta file from your own experiment, you can download an ancient oral sample of interest from the [AncientMetagenomeDir](https://github.com/SPAAM-community/AncientMetagenomeDir) or from the [SRA](https://sra-explorer.info/).  
