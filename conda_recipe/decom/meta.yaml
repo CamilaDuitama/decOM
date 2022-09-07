@@ -1,5 +1,5 @@
 {% set name = "decOM" %}
-{% set version = "0.0.25" %}
+{% set version = "0.0.26" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: e8d8f76822c6f631c3ed10016193ad01a2b86ab31c6929b6af1fdfa1d3989efa
+  sha256: ea1a3daa3fce6d5e93a34b13112394562564468d3cf8f28d3aaf7c2124e61863
 
 build:
   number: 0
@@ -15,6 +15,8 @@ build:
     - decOM = decOM.__main__:main
     - decOM-aOralOut = decOM.aOralOut.__main__:main
     - decOM-format = decOM.format.__main__:main
+    - decOM-LOO = decOM.LOO.__main__:main
+    - decOM-CV = decOM.CV.__main__:main
   script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
@@ -37,6 +39,8 @@ requirements:
 test:
   imports:
     - decOM
+    - decOM.CV
+    - decOM.LOO
     - decOM.aOralOut
     - decOM.data
     - decOM.format
@@ -46,6 +50,8 @@ test:
     - decOM --help
     - decOM-aOralOut --help
     - decOM-format --help
+    - decOM-LOO --help
+    - decOM-CV --help
 
 about:
   home: "https://github.com/CamilaDuitama/decOM"
@@ -58,4 +64,4 @@ about:
 
 extra:
   recipe-maintainers:
-    - your-github-id-here
+    - CamilaDuitama

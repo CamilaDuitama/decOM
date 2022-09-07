@@ -50,8 +50,8 @@ def main():
     keys_parser.add_argument("-k", "--key", dest='KEY', help="filtering key (a kmtricks fof with only one sample). "
                                                              "When this argument is set, -s/--sink must be defined too.")
     keys_parser.add_argument("-p_keys", "--path_keys", dest='PATH_KEYS',
-                             help=" Path to folder with filtering keys (a kmtricks fof with only one sample)."
-                                  "You should have as many .fof files as sinks."
+                             help=" Path to folder with filtering keys (a kmtricks fof with only one sample). "
+                                  "You should have as many .fof files as sinks. "
                                   "When this argument is set, -p_sinks/--path_sinks must be defined too.")
     parser.add_argument("-mem", "--memory", dest='MEMORY',
                         help="Write down how much memory you want to use for this process. Ex: 10GB", required=True,
@@ -103,6 +103,17 @@ def main():
 
 
     print_status("Starting decOM version: " + str(_version()))
+
+    print_status("Arguments decOM:"+"\n"+ 
+    "sink: "+str(sink)+","+
+    "p_sinks: "+str(p_sinks)+","+
+    "p_sources: "+str(p_sources)+","+
+    "key: "+str(key)+","+
+    "p_keys: "+str(p_keys)+","+
+    "t: "+str(t)+","+
+    "plt: "+str(plot)+","+
+    "mem: "+str(mem)+","+ 
+    "o: "+str(output))
 
     #One sink to analyse only
     if sink is not None:

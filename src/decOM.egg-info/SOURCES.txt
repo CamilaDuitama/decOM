@@ -11,6 +11,10 @@ src/decOM.egg-info/dependency_links.txt
 src/decOM.egg-info/entry_points.txt
 src/decOM.egg-info/requires.txt
 src/decOM.egg-info/top_level.txt
+src/decOM/CV/__init__.py
+src/decOM/CV/__main__.py
+src/decOM/LOO/__init__.py
+src/decOM/LOO/__main__.py
 src/decOM/aOralOut/__init__.py
 src/decOM/aOralOut/__main__.py
 src/decOM/data/__init__.py
@@ -18,6 +22,16 @@ src/decOM/data/aOralOut_kmtricks.fof
 src/decOM/data/aOralOut_metadata.csv
 src/decOM/data/kmtricks.fof
 src/decOM/data/metadata.csv
+src/decOM/data/metadata_sinks_0_fold.csv
+src/decOM/data/metadata_sinks_1_fold.csv
+src/decOM/data/metadata_sinks_2_fold.csv
+src/decOM/data/metadata_sinks_3_fold.csv
+src/decOM/data/metadata_sinks_4_fold.csv
+src/decOM/data/metadata_sources_0_fold.csv
+src/decOM/data/metadata_sources_1_fold.csv
+src/decOM/data/metadata_sources_2_fold.csv
+src/decOM/data/metadata_sources_3_fold.csv
+src/decOM/data/metadata_sources_4_fold.csv
 src/decOM/format/__init__.py
 src/decOM/format/__main__.py
 src/decOM/modules/__init__.py
