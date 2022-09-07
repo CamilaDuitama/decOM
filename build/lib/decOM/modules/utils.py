@@ -145,9 +145,9 @@ def check_input(sink:str, p_sinks:str, p_sources:str, key:str, p_keys:str, t:str
         p_sources = p_sources + "/"
 
     # Verify output directory does not exist already
-    if os.path.isdir(output):
-        print_error("Output directory already exists")
-        return 1
+    #if os.path.isdir(output):
+    #    print_error("Output directory already exists")
+    #    return 1
 
     # Verify input for mem is an integer
     try:
@@ -175,8 +175,97 @@ def check_input(sink:str, p_sinks:str, p_sources:str, key:str, p_keys:str, t:str
 
     return sink, p_sinks, p_sources, key, p_keys, t, plot, output, mem
 
+def check_input_CV(p_sinks:str, p_sources:str, p_keys:str, t:str, plot:str, output:str, mem:str, default:boolean)->tuple:
+    """Function to verify user input is correct for decOM-CV
 
-def find_proportions(row:pd.Series, classes:list) -> pd.DataFrame:
+    Args:
+        p_sinks (str): .txt file with a list of sinks limited by a newline (\n).
+        When this argument is set, -p_keys/--path_keys must be defined too.
+        p_sources (str): path to folder downloaded from zenodo with sources
+        key (str): filtering key (a kmtricks fof with only one sample). When this argument is set, -s/--sink must be defined too.
+        p_keys (str): Path to folder with filtering keys (a kmtricks fof with only one sample).
+        You should have as many .fof files as sinks.When this argument is set, -p_sinks/--path_sinks must be defined too.
+        t (str): Number of threads to use.
+        plot (str): True if you want a plot (in pdf and html format) with the source proportions of the sink, else False
+        output (str): Path to output folder, where you want decOM to write the results.
+        mem (str): Memory user would like to allocate for this process.
+
+    Returns:
+        tuple: tuple with output or 1 if user input was incorrect
+    """
+    # Function to verify input is correct
+
+    # Check if folder with sources was downloaded
+    if not os.path.isdir(p_sources):
+        print_error("Path to matrix of sources is incorrect or have not downloaded matrix of sources.")
+        return 1
+    if os.path.isfile(p_sinks):
+        sinks = open(p_sinks).read().splitlines()
+        try:
+            p_sinks[-4:] == ".txt"
+
+            if len(sinks) == 1:
+                print_error("Make sure your p_sinks file is correctly formatted. It should be a .txt file delimited "
+                            "by newline (\\n)")
+                return 1
+
+            elif len(sinks) == 0:
+                print_error("Your p_sinks file is empty.")
+                return 1
+        except:
+            print_error("File extension of p_sinks is not .txt")
+            return 1
+
+        if len(sinks) > len(set(sinks)):
+            print_error("The p_sinks file has duplicated sinks")
+            return 1
+    else:
+        print_error(".txt file p_sinks does not exist")
+        return 1
+    # Add / to p_keys directory if not added by the user
+    if p_keys[-1] != "/":
+        p_keys = p_keys + "/"
+
+    if not os.path.isdir(p_keys):
+        print_error("p_keys directory does not exist")
+        return 1
+
+    for s in sinks:
+        if os.path.isfile(p_keys + s + ".fof") == False:
+            print_error("key.fof file for sink " + s + " does not exist in p_keys directory or extension is incorrect")
+            return 1
+
+        # Check number of processes
+        if int(t) <= 0:
+            t = 5
+            print_warning("-t parameter has been set to 5")
+
+        # Check if plot variable was set correctly
+        if plot not in ["True", "False"]:
+            plot = "True"
+            print_warning("-plot parameter has been set to True")
+
+        # Add / to output directory if not added by the user
+        if output[-1] != "/":
+            output = output + "/"
+
+        if p_sources[-1] != "/":
+            p_sources = p_sources + "/"
+        # Verify input for mem is an integer
+        try:
+            int(mem[0:-2])
+        except:
+            print_error("-mem parameter is incorrectly set. It should be a positive number followed by GB. Ex: 10GB")
+            return 1
+
+        # Verify the user assigned some GB to the process
+        if mem[-2:] != "GB" or int(mem[0:-2]) <= 0:
+            print_error("-mem parameter is incorrectly set. It should be a positive number followed by GB. Ex: 10GB")
+            return 1
+
+        return p_sinks, p_sources, p_keys, t, plot, output, mem
+
+def find_proportions(row:pd.Series, classes:list) -> pd.Series:
     """find_proportions is a function that estimates the percentage of every element in classes with respect to the sum over all elements in classes.
     Classes are equivalent to source environments in the microbial source tracking framework.
 
@@ -196,7 +285,7 @@ def find_proportions(row:pd.Series, classes:list) -> pd.DataFrame:
         data = dict()
         for c in classes:
             data[c] = np.nan
-        result = pd.DataFrame.from_dict(data)
+        result = pd.Series(data)
     return result
 
 def summarize_FEAST(x,Type,Envs)->pd.Series:
