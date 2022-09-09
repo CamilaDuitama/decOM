@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: decOM
-Version: 0.0.26
+Version: 0.0.27
 Summary: decOM: Similarity-based microbial source tracking for contamination assessment of ancient oral samples using k-mer-based methods
 Home-page: https://github.com/CamilaDuitama/decOM
 Author: Camila Duitama González
@@ -146,13 +146,13 @@ s_n
 And the content of `p_keys` should be:
 ```  
 p_keys/  
-├──s_1_key.fof
-├──s_2_key.fof
-├──s_3_key.fof
+├──s_1.fof
+├──s_2.fof
+├──s_3.fof
 .
 .
 .
-├──s_n_key.fof 
+├──s_n.fof 
 ```  
 
 ## Additional features 

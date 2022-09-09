@@ -44,8 +44,8 @@ def check_nrows(path:str)->int:
     Returns:
         int: Number of rows in intput file
     """
-    nrows = subprocess.check_output(["wc", "-l",path])
-    nrows = int(nrows.decode('utf-8').split(" ")[0])
+    with open(path, 'r') as fp:
+        nrows = len(fp.readlines())
     return nrows
 
 def check_input(sink:str, p_sinks:str, p_sources:str, key:str, p_keys:str, t:str, plot:str, output:str, mem:str, default:boolean)->tuple:

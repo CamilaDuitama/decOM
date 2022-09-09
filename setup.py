@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="decOM",
-    version="0.0.26",
+    version="0.0.27",
     author="Camila Duitama González",
     author_email="cduitama@pasteur.fr",
     description="decOM: Similarity-based microbial source tracking for contamination assessment of ancient oral samples using k-mer-based methods",

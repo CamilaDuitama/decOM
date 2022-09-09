@@ -1,5 +1,5 @@
 {% set name = "decOM" %}
-{% set version = "0.0.26" %}
+{% set version = "0.0.27" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: ea1a3daa3fce6d5e93a34b13112394562564468d3cf8f28d3aaf7c2124e61863
+  sha256: c1d6739670a2200869d1d8ac70900f675dba44d4cdf8cb87fa4ab28b87a5b86f
 
 build:
   number: 0
