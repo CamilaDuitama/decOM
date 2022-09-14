@@ -38,6 +38,7 @@ cd decOM
 mamba env create -n decOM --file environment.yml  
 conda deactivate
 conda activate decOM  
+```
 
 To make the ``decOM`` command available, it is advised to include the absolute path of `decOM` in your PATH environment variable by adding the following line to your `~/.bashrc` file:  
   
