@@ -1,3 +1,4 @@
+from re import M
 import sys
 from xmlrpc.client import boolean
 from colorama import Fore, Style
@@ -145,9 +146,9 @@ def check_input(sink:str, p_sinks:str, p_sources:str, key:str, p_keys:str, t:str
         p_sources = p_sources + "/"
 
     # Verify output directory does not exist already
-    #if os.path.isdir(output):
-    #    print_error("Output directory already exists")
-    #    return 1
+    if os.path.isdir(output):
+        print_error("Output directory already exists")
+        return 1
 
     # Verify input for mem is an integer
     try:
@@ -174,6 +175,180 @@ def check_input(sink:str, p_sinks:str, p_sources:str, key:str, p_keys:str, t:str
             return 1
 
     return sink, p_sinks, p_sources, key, p_keys, t, plot, output, mem
+
+def check_input_MST(sink:str, p_sinks:str, p_sources:str, m:str,key:str, p_keys:str, t:str, plot:str, output:str, mem:str, default:boolean)->tuple:
+    """Function to verify user input for decOM-MST is correct
+
+
+    Args:
+        sink (str): Name of the sink being analysed.
+        It must be the same as the first element of key.fof. When this argument is set, -k/--key must be defined too
+
+        p_sinks (str): .txt file with a list of sinks limited by a newline (\n).
+        When this argument is set, -p_keys/--path_keys must be defined too.
+
+        p_sources (str): Path to matrix of sources built with kmtricks.
+
+        m (str) : Path to .csv file with 2 columns : SampleID and Env. 
+        Each source used to build the matrix of sources must be in this table and must have a corresponding environment label.
+
+        key (str): filtering key (a kmtricks fof with only one sample). When this argument is set, -s/--sink must be defined too.
+
+        p_keys (str): Path to folder with filtering keys (a kmtricks fof with only one sample).
+        You should have as many .fof files as sinks.When this argument is set, -p_sinks/--path_sinks must be defined too.
+
+        t (str): Number of threads to use.
+
+        plot (str): True if you want a plot (in pdf and html format) with the source proportions of the sink, else False.
+
+        output (str): Path to output folder, where you want decOM to write the results.
+
+        mem (str): Memory user would like to allocate for this process.
+
+        default (boolean): True if user wants to run normal decOM, False if user wants to run decOM-aOralOut
+
+    Returns:
+        tuple: tuple with output or 1 if user input was incorrect
+    """
+
+    # Verify output directory does not exist already
+    if os.path.isdir(output):
+        print_error("Output directory already exists")
+        return 1
+    #Check if map.csv is correctly formatted:
+    if os.path.isfile(m):
+
+        if m[-4:] != ".csv":
+            print_error("File extension of map is not .csv")
+            return 1  
+        try:
+            m_file=pd.read_csv(m)          
+        except Exception as e:
+            print_error(e)
+            print_error("your map.csv file is corrupted or not properly formatted")
+            return 1
+        
+        nrows_m = open(m).read().splitlines()
+        if len(nrows_m) == 0:
+            print_error("Your map.csv file is empty.")
+            return 1
+
+        true_cols={"Env","SampleID"}
+        user_cols=set(m_file.columns)  
+        
+        if true_cols!=user_cols:
+            print_error("Your map.csv file is not properly formatted. Columns of map.csv file should be Env and SampleID only.")
+            return 1
+        if m_file.isnull().values.any():
+            print_error("Your map.csv file contains NaNs. Please remove them.")
+            return 1
+
+    else:
+        print_error("map.csv file does not exist or path is incorrect") 
+        return 1
+    
+    # Add / to output directory if not added by the user
+    if output[-1] != "/":
+        output = output + "/"
+
+    if p_sources[-1] != "/":
+        p_sources = p_sources + "/"
+
+    #Check folder with sources
+    if not os.path.isdir(p_sources):
+        print_error("Path to matrix of sources is incorrect or have not created your matrix of sources.")
+        return 1
+    
+    try:
+        fof=pd.read_csv(p_sources+"kmtricks.fof",sep="\s:\s",engine="python", names=["SampleID","Path"])
+        samples_m_file=set(m_file["SampleID"])
+        samples_fof=set(fof["SampleID"])
+        if samples_m_file!=samples_fof:
+            print_error("The samples in the kmtricks.fof of your p_sources/ folder are different from the samples in your map.csv file.")
+            return 1
+        if not os.path.isfile(p_sources+"/matrices/matrix_100.pa"):
+            print_error("File matrix_100.pa does not exist. Make sure a binary pa version of your matrix of sources is present in the folder p_sources/matrices/")
+            return 1
+        if not os.path.isfile(p_sources+"/matrices/matrix_100.pa.txt"):
+            print_error("File matrix_100.pa.txt does not exist. Make sure a text pa version of your matrix of sources is present in the folder p_sources/matrices/")
+            return 1
+    except:
+        print_error("p_sources folder is corrupted. Make sure you follow the instructions to create the matrix of sources as described in the README file and make sure you did not remove any file inside output the folder.")
+    
+    # If user only has one sink
+    if sink != None:
+
+        with open(key) as f:
+            sink_in_fof = f.read().split(" ")[0]
+
+        if sink != sink_in_fof:
+            print_error("The name of your -s/--sink should coincide with the name of the sample in the key.fof ")
+            return 1
+
+        if not os.path.isfile(key):
+            print_error("key.fof file does not exist")
+            return 1
+
+    elif sink == None:
+        if os.path.isfile(p_sinks):
+            sinks = open(p_sinks).read().splitlines()
+            try:
+                p_sinks[-4:] == ".txt"
+
+                if len(sinks) == 1:
+                    print_error("Make sure your p_sinks file is correctly formatted. It should be a .txt file delimited "
+                                "by newline (\\n)")
+                    return 1
+
+                elif len(sinks) == 0:
+                    print_error("Your p_sinks file is empty.")
+                    return 1
+            except:
+                print_error("File extension of p_sinks is not .txt")
+                return 1
+
+            if len(sinks) > len(set(sinks)):
+                print_error("The p_sinks file has duplicated sinks")
+                return 1
+        else:
+            print_error(".txt file p_sinks does not exist")
+            return 1
+        # Add / to p_keys directory if not added by the user
+        if p_keys[-1] != "/":
+            p_keys = p_keys + "/"
+
+        if not os.path.isdir(p_keys):
+            print_error("p_keys directory does not exist")
+            return 1
+
+        for s in sinks:
+            if os.path.isfile(p_keys + s + ".fof") == False:
+                print_error("key.fof file for sink " + s + " does not exist in p_keys directory or extension is incorrect")
+                return 1
+
+    # Check number of processes
+    if int(t) <= 0:
+        t = 5
+        print_warning("-t parameter has been set to 5")
+
+    # Check if plot variable was set correctly
+    if plot not in ["True", "False"]:
+        plot = "True"
+        print_warning("-plot parameter has been set to True")
+
+    # Verify input for mem is an integer
+    try:
+        int(mem[0:-2])
+    except:
+        print_error("-mem parameter is incorrectly set. It should be a positive number followed by GB. Ex: 10GB")
+        return 1
+
+    # Verify the user assigned some GB to the process
+    if mem[-2:] != "GB" or int(mem[0:-2]) <= 0:
+        print_error("-mem parameter is incorrectly set. It should be a positive number followed by GB. Ex: 10GB")
+        return 1
+
+    return sink, p_sinks, p_sources, m, key, p_keys, t, plot, output, mem
 
 def check_input_CV(p_sinks:str, p_sources:str, p_keys:str, t:str, plot:str, output:str, mem:str, default:boolean)->tuple:
     """Function to verify user input is correct for decOM-CV
@@ -358,15 +533,15 @@ def plot_results(sink:str, p_sinks:str, result:pd.DataFrame, classes:list, outpu
     """
     if sink is not None:
         fig = px.histogram(result, x="Sink", y=["p_" + c for c in classes],
-                           color_discrete_sequence=["#FF9900","#109618","#3366CC","#DC3912","#990099"], opacity=0.9,
+                           color_discrete_sequence=px.colors.qualitative.G10 + px.colors.qualitative.T10, opacity=0.9,
                            title="Proportions for sinks estimated by decOM", barmode="stack")
         fig.update_layout(width=400, height=800, yaxis_title="Percentage (%)")
         fig.write_image(output + "result_plot_sinks.pdf", width=400, height=800, scale=5, engine="kaleido")
         fig.write_html(output + "result_plot_sinks.html")
 
     elif p_sinks is not None:
-        fig = px.histogram(result.sort_values("p_aOral"), x="Sink", y=["p_" + c for c in classes],
-                           color_discrete_sequence=["#FF9900","#109618","#3366CC","#DC3912","#990099"], opacity=0.9,
+        fig = px.histogram(result, x="Sink", y=["p_" + c for c in classes],
+                           color_discrete_sequence=px.colors.qualitative.G10 + px.colors.qualitative.T10, opacity=0.9,
                            title="Proportions for sinks estimated by decOM", barmode="stack")
         fig.update_layout(width=800, height=500,yaxis_title="Percentage (%)")
         fig.write_image(output + "result_plot_sinks.pdf", width=1000, height=500, scale=5, engine="kaleido")
