@@ -15,8 +15,11 @@ src/decOM/CV/__init__.py
 src/decOM/CV/__main__.py
 src/decOM/LOO/__init__.py
 src/decOM/LOO/__main__.py
+src/decOM/MST/__init__.py
+src/decOM/MST/__main__.py
 src/decOM/aOralOut/__init__.py
 src/decOM/aOralOut/__main__.py
+src/decOM/data/D3.fasta
 src/decOM/data/__init__.py
 src/decOM/data/aOralOut_kmtricks.fof
 src/decOM/data/aOralOut_metadata.csv
@@ -38,4 +41,4 @@ src/decOM/modules/__init__.py
 src/decOM/modules/sink.py
 src/decOM/modules/utils.py
 src/test/__init__.py
-src/test/test_pytest.py
+src/test/pytest_test.py

@@ -1,15 +1,41 @@
-import re
-from decOM.modules.utils import check_input, check_nrows, find_proportions,find_max, summarize_FEAST
-from decOM.modules.sink import create_vector
+from decOM.modules.utils import check_nrows, find_proportions,find_max, summarize_FEAST
 import pandas as pd
 import numpy as np
 from pandas.testing import assert_frame_equal, assert_series_equal
 from decOM import data
 from importlib_resources import files
+import decOM.modules.utils as Utils
+import mock
+import unittest
+
 resources = str(files(data))
 
 classes=["Sediment/Soil","Skin","aOral","mOral","Unknown"]
 result=pd.DataFrame.from_dict({"Sediment/Soil":[1],"Skin":[2],"aOral":[6],"mOral":[1],"Unknown":[0]})
+
+class TestPrintError(unittest.TestCase):
+    @mock.patch("decOM.modules.utils.print_error")
+    def test_print_error(self,mock_print_error):
+        Utils.print_error("test")
+        mock_print_error.assert_called_with("test")
+
+class TestPrintWarning(unittest.TestCase):
+    @mock.patch("decOM.modules.utils.print_warning")
+    def test_print_warning(self,mock_print_warning):
+        Utils.print_warning("test")
+        mock_print_warning.assert_called_with("test")
+
+class TestPrintStatus(unittest.TestCase):
+    @mock.patch("decOM.modules.utils.print_status")
+    def test_print_status(self,mock_print_status):
+        Utils.print_status("test")
+        mock_print_status.assert_called_with("test")
+
+class TestRemoveFiles(unittest.TestCase):
+    @mock.patch("decOM.modules.utils.remove_files")
+    def test_remove_files(self,mock_remove_files):
+        Utils.remove_files("test")
+        mock_remove_files.assert_called_with("test")
 
 def test_find_proportions():
     actual = result.apply(find_proportions,axis=1,classes=classes)

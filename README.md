@@ -13,7 +13,9 @@
 + [Test](#test)  
 + [Output files](#output-files)  
 + [Usage](#usage)
-+ [Additional features](#additional-features)  
++ [Additional features](#additional-features)
+    + [aOralOut](#aoralout)
+    + [MST](#MST)
 + [Command-line options](#command-line-options)  
   
 ## System requirements  
@@ -86,7 +88,7 @@ the running time per sink, the sink name and the proportions. The result for the
 The `result_plot_sinks.pdf` and `result_plot_sinks.html` are static and interactive plots (respectively) for the proportions of source environments per sink.
 The `{s}_vector/` folder is the output of kmtricks filter + kmtricks aggregate.
 
-> **UNKOWNS IS A FEATURE IN DEVELOPMENT!**: The contribution of an unnknown source is a feature in development. For a more accurate assessment of the contamination proportions in a sample, please take into account the raw counts for Sediment/Soil, Skin, aOral, mOral.
+> **UNKOWNS IS A FEATURE IN DEVELOPMENT!**: The contribution of an unknown source is a feature in development. For a more accurate assessment of the contamination proportions in a sample, please take into account the raw counts for Sediment/Soil, Skin, aOral, mOral.
 
 ## Usage  
   
@@ -104,7 +106,7 @@ The `key.fof` has one line of text depending on your type of data:
   
 *Note*: As `decOM` relies on [`kmtricks`](https://github.com/tlemane/kmtricks), you might use a FASTA or FASTQ format, gzipped or not, which means you have to change the `key.fof` file accordingly.  
   
-Since you now have the fasta/fastq file of your sink, the folder with the matrix of sources and the key file, simply run decOM as follows:  
+Since you now have the fasta/fastq file of your sink, the folder with the matrix of sources and the key file, simply run `decOM` as follows:  
 
 ### Single sink
 
@@ -145,7 +147,7 @@ p_keys/
 
 ## Additional features 
 
-### aOralOut:
+  ### aOralOut:
 This feature was thought for the users who prefered having mOral, Skin and Sediment/Soil samples as sources but no aOral samples. Once you download and unzip the new matrix of sources:
 
 ```
@@ -153,11 +155,43 @@ wget https://zenodo.org/record/6772124/files/aOralOut_sources.tar.gz
 tar -xf aOralOut_sources.tar.gz
 ```
 
-Simply run decOM-aOralOut as follows:
+Simply run `decOM-aOralOut` as follows:
 
 ````
 decOM-aOralOut -s SRR13355807 -p_sources aOralOut_sources/ -k tests/sample/SRR13355807.fof -mem 10GB -t 5 
 ````
+
+  ### MST:
+This feature was thought for the users who prefer building their own k-mer matrix of sources. To run `decOM-MST` you need to create your own `p_sources` folder and additionally you need a `-m` or map file with one label per source.
+
+To create the `p_sources` you can run [kmtricks](https://github.com/tlemane/kmtricks/wiki) (already in your conda environment for decOM) as follows:
+
+```
+kmtricks pipeline --file kmtricks.fof --run-dir p_sources --mode kmer:pa:bin 
+
+kmtricks aggregate --run-dir p_sources --pa-matrix kmer --cpr-in --output p_sources/matrices/matrix.pa --format bin
+
+kmtricks dump --run-dir p_sources --input p_sources/matrices/matrix.pa.lz4 -o p_sources/matrices/matrix.pa.txt
+
+```
+
+**NOTE:** Building a k-mer matrix with any other parameters of kmtricks and using it as input for `decOM-MST` has not been tested.
+
+You additionally need a `-m` file which is a .csv file of two columns: *Env* and *SampleID*. This is a `x` by 2 table, where `x` is the number of sources in your input k-mer matrix (number of columns in the kmtricks.fof used to run kmtricks). `SampleID` refers to the unique identifier of each source sample, and `Env` is the corresponding label for the source environment from where each sample was taken.
+
+You can run `decOM-MST` with test data as follows:
+
+```
+kmtricks pipeline --file tests/MST/kmtricks.fof --run-dir p_sources --mode kmer:pa:bin
+
+kmtricks aggregate --run-dir p_sources --pa-matrix kmer --output p_sources/matrices/matrix.pa --format bin 
+
+kmtricks dump --run-dir p_sources/ --input p_sources/matrices/matrix.pa -o p_sources/matrices/matrix.pa.txt
+
+decOM-MST -s SRR13355807 -p_sources p_sources/ -m tests/MST/map.csv -k tests/sample/SRR13355807.fof --mem 10GB -t 5
+```
+
+
 
 ## Command line options  
   

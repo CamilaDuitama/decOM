@@ -12,6 +12,7 @@ decOM.log
 decOM_output/
 src/decOM/*/__pychache__/
 src/decOM/__pycache__/
+src/tests/__pycache__/
 tests/format
 tests/LOO/
 build/

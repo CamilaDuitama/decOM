@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 from asyncio.subprocess import PIPE
-from .utils import *
+from xmlrpc.client import Boolean, boolean
+from .utils import print_error,print_status, print_warning, plot_results, find_proportions,find_max,remove_files
+import os
 from os import access, path
 import pandas as pd
+import numpy as np
 from dask.distributed import Client, LocalCluster
 import dask.dataframe as dd
 import dask.array as da
 import time
 import glob
+import subprocess
 
 def create_vector(output_path:str, path_to_sources:str, key:str, accession:str, t:int):
     """create_vector prepares the input fastq files by using kmtricks. 
@@ -24,17 +28,20 @@ def create_vector(output_path:str, path_to_sources:str, key:str, accession:str, 
     """
     output = output_path + accession + "_vector/"
     if path.exists(output):
-        subprocess.call(["rm", "-rf", output])
+        subprocess.run(["rm", "-rf", output])
     try:    
-        subprocess.call(
-            ["kmtricks", "filter", "--in-matrix", path_to_sources, "--key", key, "--output", output, "--out-types", "k,v"])
+        filter = subprocess.run(
+            ["kmtricks", "filter", "--in-matrix", path_to_sources, "--key", key, "--output", output, "--out-types", "k,v"],capture_output=True,text=True)
+        print_status("Status for kmtricks filter for sample "+accession+"\n"+filter.stderr[:-1])
     except Exception as e:
         print_error(e)
         return 1
     try:
-        subprocess.call(
+        aggregate = subprocess.run(
             ["kmtricks", "aggregate", "-t", str(t), "--run-dir", output, "--count", accession + ":kmer", "--output",
-            output + "counts/" + accession + "_missing.txt"])
+            output + "counts/" + accession + "_missing.txt"],capture_output=True,text=True)
+        print_status("Status for kmtricks aggregate for sample "+accession+"\n"+aggregate.stderr[:-1])
+
     except Exception as e:
         print_error(e)
         return 1
@@ -54,15 +61,43 @@ def concat_vectors(output:str,accession:str):
     try:
         output_to_vectors = output + accession + "_vector/matrices/"
         files=glob.glob(output_to_vectors+"*.vec")
-        with open(output_to_vectors+"sink.vec", "w") as outfile:
-            subprocess.run(["cat"]+files,stdout=outfile)
+        if len(files)!=0:
+            try:
+                with open(output_to_vectors+"sink.vec", "w") as outfile:
+                    subprocess.run(["cat"]+files,stdout=outfile,check=True)
+            except Exception as e:
+                print_error(e)
+                return 1
+        else:
+            print_warning(".vec files in "+ output_to_vectors + " folder could not be concatenated as there are no .vec files in the folder.")
+            return 1
     except Exception as e:
         print_error(e)
         return 1
     return
 
-def one_sink(sink, p_sinks, p_sources, key, t, plot, output, mem, resources, default):
+def one_sink(sink:str, p_sinks:str, p_sources:str, key:str, t:int, plot:bool, output:str, mem:str, resources:str, default:bool):
+    """one_sink is the function of decOM in charge of processing one sink only.
+
+    Args:
+        sink (str): Name of the sink being analysed.
+        It must be the same as the first element of key.fof. When this argument is set, -k/--key must be defined too
+        p_sinks (str): .txt file with a list of sinks limited by a newline (\n).
+        When this argument is set, -p_keys/--path_keys must be defined too.
+        p_sources (str): path to folder downloaded from zenodo with sources
+        key (str): filtering key (a kmtricks fof with only one sample). When this argument is set, -s/--sink must be defined too.
+        p_keys (str): Path to folder with filtering keys (a kmtricks fof with only one sample).
+        You should have as many .fof files as sinks.When this argument is set, -p_sinks/--path_sinks must be defined too.
+        t (int): Number of threads to use.
+        plot (str): True if you want a plot (in pdf and html format) with the source proportions of the sink, else False
+        output (str): Path to output folder, where you want decOM to write the results.
+        mem (str): Memory user would like to allocate for this process.
+        resources (str): Path to data folder of resources within decOM package.
+        default (boolean): True if user wants to run standard decOM, False if user wants to run decOM-aOralOut
+
+    """
     start = time.time()
+
     #Which matrix of sources does the user want to use
     if default == True:
         # Load metadata from sources
@@ -182,7 +217,26 @@ def one_sink(sink, p_sinks, p_sources, key, t, plot, output, mem, resources, def
         remove_files("./dask-worker-space/");
         return 1
 
-def several_sinks(sink, p_sinks, p_sources, p_keys, t, plot, output, mem, resources ,default):
+def several_sinks(sink:str, p_sinks:str, p_sources:str, p_keys:str, t:int, plot:bool, output:str, mem:str, resources:str ,default:bool):
+    """several_sinks is the function of decOM in charge of processing a list of sinks.
+
+    Args:
+        sink (str): Name of the sink being analysed.
+        It must be the same as the first element of key.fof. When this argument is set, -k/--key must be defined too
+        p_sinks (str): .txt file with a list of sinks limited by a newline (\n).
+        When this argument is set, -p_keys/--path_keys must be defined too.
+        p_sources (str): path to folder downloaded from zenodo with sources
+        key (str): filtering key (a kmtricks fof with only one sample). When this argument is set, -s/--sink must be defined too.
+        p_keys (str): Path to folder with filtering keys (a kmtricks fof with only one sample).
+        You should have as many .fof files as sinks.When this argument is set, -p_sinks/--path_sinks must be defined too.
+        t (int): Number of threads to use.
+        plot (str): True if you want a plot (in pdf and html format) with the source proportions of the sink, else False
+        output (str): Path to output folder, where you want decOM to write the results.
+        mem (str): Memory user would like to allocate for this process.
+        resources (str): Path to data folder of resources within decOM package.
+        default (boolean): True if user wants to run standard decOM, False if user wants to run decOM-aOralOut
+
+    """
     start = time.time()
     #Which matrix of sources does the user want to use
     if default == True:
@@ -239,6 +293,18 @@ def several_sinks(sink, p_sinks, p_sources, p_keys, t, plot, output, mem, resour
 
         print_status("Chunk sizes for the M_s matrix were computed")
 
+        # Define list of labels for sources
+        labels = [sorted_metadata["True_label"][x] for x in range(len(sources))]
+
+        # Define matrix H (one hot-encoding of labels)
+        H = da.from_array(pd.get_dummies(labels, columns=classes).values)
+
+        #Create matrix M_s * H
+        Ms_dot_H=np.matmul(M_s,H)
+        Ms_dot_H=Ms_dot_H.persist()
+
+        print_status("Persist of Ms_dot_H was finished ")
+
         # Create vector of sources
         sinks = open(p_sinks).read().splitlines()
         for s in sinks:
@@ -255,8 +321,8 @@ def several_sinks(sink, p_sinks, p_sources, p_keys, t, plot, output, mem, resour
             path_missing_kmers = output + s + "_vector/counts/" + s + "_missing.txt"
 
             if not os.path.isfile(path_sink) or not os.path.isfile(path_missing_kmers):
-                print_error("Sink vector for " + s + " could not be created, verify your input files are correct")
-                return 1
+                print_warning("Sink vector for " + s + " could not be created, verify your input files for that sample are correct")
+                continue
             else:
                 print_status("Sink vector for " + s + " was created")
 
@@ -269,14 +335,8 @@ def several_sinks(sink, p_sinks, p_sources, p_keys, t, plot, output, mem, resour
             # Define s_t (vector of sink)
             s_t = s_t.persist()
 
-            # Define list of labels for sources
-            labels = [sorted_metadata["True_label"][x] for x in range(len(sources))]
-
-            # Define matrix H (one hot-encoding of labels)
-            H = da.from_array(pd.get_dummies(labels, columns=classes).values)
-
             # Construct vector w (number of balls that go into each bin, see eq. 2 in paper)
-            w = np.matmul(np.matmul(s_t, M_s), H)
+            w = np.matmul(s_t, Ms_dot_H)
             w = w.compute()
             w = pd.DataFrame(w, index=classes).transpose()
 
@@ -569,7 +629,34 @@ def CV(p_sinks, p_sources, p_keys, t, plot, output, mem, resources, fold):
         remove_files("./dask-worker-space/");
         return 1
         
-def one_sink_MST(sink, p_sinks, p_sources, m, key, t, plot, output, mem, resources, default):
+def one_sink_MST(sink:str, p_sinks:None, p_sources:str, m:str, key:str, t:int, plot:bool, output:str, mem:str):
+    """one_sink_MST is the function in charge of processing one sink using decOM-MST feature.
+
+    Args:
+        sink (str): Name of the sink being analysed.
+        It must be the same as the first element of key.fof. When this argument is set, -k/--key must be defined too
+
+        p_sinks (None): Must be None as we are analysing one sample only.
+
+        p_sources (str): Path to matrix of sources built with kmtricks.
+
+        m (str) : Path to .csv file with 2 columns : SampleID and Env. 
+        Each source used to build the matrix of sources must be in this table and must have a corresponding environment label.
+
+        key (str): filtering key (a kmtricks fof with only one sample). When this argument is set, -s/--sink must be defined too.
+
+        p_keys (str): Path to folder with filtering keys (a kmtricks fof with only one sample).
+        You should have as many .fof files as sinks.When this argument is set, -p_sinks/--path_sinks must be defined too.
+
+        t (str): Number of threads to use.
+
+        plot (str): True if you want a plot (in pdf and html format) with the source proportions of the sink, else False.
+
+        output (str): Path to output folder, where you want decOM to write the results.
+
+        mem (str): Memory user would like to allocate for this process.
+    """
+
     start = time.time()
     #Upload map.csv file
     metadata = pd.read_csv(m)
@@ -618,7 +705,7 @@ def one_sink_MST(sink, p_sinks, p_sources, m, key, t, plot, output, mem, resourc
 
         # Start using dask:
         # Load k-mer matrix of sources as dataframe
-        partition = dd.read_table(p_sources + "matrices/matrix_100.pa.txt", header=None, sep=" ",
+        partition = dd.read_table(p_sources + "matrices/matrix.pa.txt", header=None, sep=" ",
                                     names=["Kmer"] + list(colnames["SampleID"]))
 
         # Drop K-mer column
@@ -678,7 +765,34 @@ def one_sink_MST(sink, p_sinks, p_sources, m, key, t, plot, output, mem, resourc
         remove_files("./dask-worker-space/");
         return 1
 
-def several_sinks_MST(sink, p_sinks, p_sources, m, p_keys, t, plot, output, mem, resources ,default):
+def several_sinks_MST(sink:None, p_sinks:str, p_sources:str, m:str, p_keys:str, t:int, plot:bool, output:str, mem:str):
+    """several_sinks_MST is the function in charge of processing a list of sinks using decOM-MST feature.
+
+    Args:
+        sink (str): Must be None as we are analysing a list of samples
+
+        p_sinks (str): .txt file with a list of sinks limited by a newline (\n).
+        When this argument is set, -p_keys/--path_keys must be defined too.
+
+        p_sources (str): Path to matrix of sources built with kmtricks.
+
+        m (str) : Path to map.csv file with 2 columns : SampleID and Env. 
+        Each source used to build the matrix of sources must be in this table and must have a corresponding environment label.
+
+        key (str): filtering key (a kmtricks fof with only one sample). When this argument is set, -s/--sink must be defined too.
+
+        p_keys (str): Path to folder with filtering keys (a kmtricks fof with only one sample).
+        You should have as many .fof files as sinks.When this argument is set, -p_sinks/--path_sinks must be defined too.
+
+        t (str): Number of threads to use.
+
+        plot (str): True if you want a plot (in pdf and html format) with the source proportions of the sink, else False.
+
+        output (str): Path to output folder, where you want decOM to write the results.
+
+        mem (str): Memory user would like to allocate for this process.
+    """
+
     start = time.time()
 
     #Upload map.csv file
@@ -715,7 +829,7 @@ def several_sinks_MST(sink, p_sinks, p_sources, m, p_keys, t, plot, output, mem,
 
     try:
         # Load k-mer matrix of sources as dataframe
-        partition = dd.read_table(p_sources + "matrices/matrix_100.pa.txt", header=None, sep=" ",
+        partition = dd.read_table(p_sources + "matrices/matrix.pa.txt", header=None, sep=" ",
                                     names=["Kmer"] + list(colnames["SampleID"]))
 
         # Drop K-mer column
@@ -727,6 +841,18 @@ def several_sinks_MST(sink, p_sinks, p_sources, m, p_keys, t, plot, output, mem,
 
         print_status("Chunk sizes for the M_s matrix were computed")
 
+        # Define list of labels for sources
+        labels = [sorted_metadata["Env"][x] for x in range(len(sources))]
+
+        # Define matrix H (one hot-encoding of labels)
+        H = da.from_array(pd.get_dummies(labels, columns=classes).values)
+
+        #Create matrix M_s * H
+        Ms_dot_H=np.matmul(M_s,H)
+        Ms_dot_H=Ms_dot_H.persist()
+
+        print_status("Persist of Ms_dot_H was finished ")
+
         # Create vector of sources
         sinks = open(p_sinks).read().splitlines()
         for s in sinks:
@@ -736,14 +862,14 @@ def several_sinks_MST(sink, p_sinks, p_sources, m, p_keys, t, plot, output, mem,
             create_vector(output_path=output, path_to_sources=p_sources, key=p_keys + s + ".fof", accession=s,
                                 t=t)
             concat_vectors(output=output,accession=s)
-
+            
             # Define paths from output of kmtricks filter and kmtricks aggregate
             path_sink = output + s + "_vector/matrices/sink.vec"
             path_missing_kmers = output + s + "_vector/counts/" + s + "_missing.txt"
 
             if not os.path.isfile(path_sink) or not os.path.isfile(path_missing_kmers):
-                print_error("Sink vector for " + s + " could not be created, verify your input files are correct")
-                return 1
+                print_warning("Sink vector for " + s + " could not be created, verify your input files for that sample are correct")
+                continue
             else:
                 print_status("Sink vector for " + s + " was created")
 
@@ -756,14 +882,8 @@ def several_sinks_MST(sink, p_sinks, p_sources, m, p_keys, t, plot, output, mem,
             # Define s_t (vector of sink)
             s_t = s_t.persist()
 
-            # Define list of labels for sources
-            labels = [sorted_metadata["Env"][x] for x in range(len(sources))]
-
-            # Define matrix H (one hot-encoding of labels)
-            H = da.from_array(pd.get_dummies(labels, columns=classes).values)
-
             # Construct vector w (number of balls that go into each bin, see eq. 2 in paper)
-            w = np.matmul(np.matmul(s_t, M_s), H)
+            w = np.matmul(s_t, Ms_dot_H)
             w = w.compute()
             w = pd.DataFrame(w, index=classes).transpose()
 

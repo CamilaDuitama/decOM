@@ -47,7 +47,7 @@ def main():
     parser.add_argument("-p_sources", "--path_sources", dest='PATH_SOURCES',
                         help="path to matrix of sources created using kmtricks",
                         required=True)
-    parser.add_argument("-m", "--map_file", dest='MAP_FILE',
+    parser.add_argument("-m", "--map", dest='MAP_FILE',
                         help=".csv file with two columns: SampleID and Env. All the samples used to build the input matrix of sources p_sources should be present in this table.",
                         required=True)
     keys_parser.add_argument("-k", "--key", dest='KEY', help="filtering key (a kmtricks fof with only one sample). "
@@ -98,7 +98,7 @@ def main():
     output = args.OUTPUT
 
     # Check user input is correct
-    checked_input = check_input_MST(sink, p_sinks, p_sources, m, key, p_keys, t, plot, output, mem, default = False)
+    checked_input = check_input_MST(sink, p_sinks, p_sources, m, key, p_keys, t, plot, output, mem)
     if checked_input == 1:
         return 1
     else:
@@ -121,11 +121,10 @@ def main():
 
     #One sink to analyse only
     if sink is not None:
-        return one_sink_MST(sink, p_sinks, p_sources, m ,key, t, plot, output, mem, resources, default=False)
-
+        return one_sink_MST(sink, p_sinks, p_sources, m ,key, t, plot, output, mem)
     #If user has several sinks  
     elif p_sinks is not None:
-        return several_sinks_MST(sink, p_sinks, p_sources, m ,p_keys, t, plot, output, mem, resources ,default=False)
+        return several_sinks_MST(sink, p_sinks, p_sources, m ,p_keys, t, plot, output, mem)
 
 if __name__ == "__main__":
     try:

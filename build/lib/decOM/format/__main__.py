@@ -23,7 +23,7 @@ def main():
     required=True)
     parser.add_argument("-mst", "--MST_table", dest='MST_TABLE',
                               help="Path to output table you are interested in reformatting. It should be a tab (\t) separated file.",required=True)
-    parser.add_argument("-mapf", "--map_file", dest='MAPFILE', help="Path to map.txt used by ST/FEAST. It should be a tab (\t) separated file.",required=True)
+    parser.add_argument("-map", "--map", dest='MAPFILE', help="Path to map.txt used by ST/FEAST. It should be a tab (\t) separated file.",required=True)
     parser.add_argument("-out", "--output_file", dest='OUTFILE', help="Name of output file",required=True)
     parser.add_argument('-v', '--verbose', dest='VERBOSE', action='count', default=0, help='Verbose output')
 
@@ -62,9 +62,9 @@ def main():
         print_error("Your output file already exists, decOM won't over-write it.")
         return 1
 
-    #Read map_file
+    #Read map
     mapf=pd.read_csv(mapf,sep="\t",index_col=0)
-    #Create list for environments present in map_file
+    #Create list for environments present in map
     envs=list(set(mapf[(mapf["SourceSink"]=="source") | (mapf["SourceSink"]=="Source")]["Env"]))
     envs=envs+["Unknown"]
     

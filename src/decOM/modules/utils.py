@@ -16,25 +16,20 @@ def eprint(*args, **kwargs):
     log.write('\n')
     print(*args, file=sys.stderr, **kwargs)
 
-
 def datetime_now():
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
 def print_error(msg):
     eprint(f'[{datetime_now()}] [' + f'{Fore.RED}error{Style.RESET_ALL}' + f'] {msg}')
 
-
 def print_warning(msg):
     eprint(f'[{datetime_now()}] [' + f'{Fore.YELLOW}warning{Style.RESET_ALL}' + f'] {msg}')
-
 
 def print_status(msg):
     eprint(f'[{datetime_now()}] [' + f'{Fore.GREEN}status{Style.RESET_ALL}' + f'] {msg}')
 
-
 def remove_files(path):
-    subprocess.call(["rm", "-rf", path])
+    subprocess.run(["rm", "-rf", path],capture_output=True,text=True)
 
 def check_nrows(path:str)->int:
     """Function to check the number of rows of an input file
@@ -71,6 +66,11 @@ def check_input(sink:str, p_sinks:str, p_sources:str, key:str, p_keys:str, t:str
         tuple: tuple with output or 1 if user input was incorrect
     """
     # Function to verify input is correct
+
+    # Verify output directory does not exist already
+    if os.path.isdir(output):
+        print_error("Output directory already exists")
+        return 1
 
     # Check if folder with sources was downloaded
     if not os.path.isdir(p_sources):
@@ -145,11 +145,6 @@ def check_input(sink:str, p_sinks:str, p_sources:str, key:str, p_keys:str, t:str
     if p_sources[-1] != "/":
         p_sources = p_sources + "/"
 
-    # Verify output directory does not exist already
-    if os.path.isdir(output):
-        print_error("Output directory already exists")
-        return 1
-
     # Verify input for mem is an integer
     try:
         int(mem[0:-2])
@@ -176,7 +171,7 @@ def check_input(sink:str, p_sinks:str, p_sources:str, key:str, p_keys:str, t:str
 
     return sink, p_sinks, p_sources, key, p_keys, t, plot, output, mem
 
-def check_input_MST(sink:str, p_sinks:str, p_sources:str, m:str,key:str, p_keys:str, t:str, plot:str, output:str, mem:str, default:boolean)->tuple:
+def check_input_MST(sink:str, p_sinks:str, p_sources:str, m:str,key:str, p_keys:str, t:str, plot:str, output:str, mem:str)->tuple:
     """Function to verify user input for decOM-MST is correct
 
 
@@ -204,8 +199,6 @@ def check_input_MST(sink:str, p_sinks:str, p_sources:str, m:str,key:str, p_keys:
         output (str): Path to output folder, where you want decOM to write the results.
 
         mem (str): Memory user would like to allocate for this process.
-
-        default (boolean): True if user wants to run normal decOM, False if user wants to run decOM-aOralOut
 
     Returns:
         tuple: tuple with output or 1 if user input was incorrect
@@ -239,6 +232,10 @@ def check_input_MST(sink:str, p_sinks:str, p_sources:str, m:str,key:str, p_keys:
         if true_cols!=user_cols:
             print_error("Your map.csv file is not properly formatted. Columns of map.csv file should be Env and SampleID only.")
             return 1
+
+        elif m_file.duplicated(subset="SampleID").any():
+            print_error("Your map.csv file contains duplicates in the column called SampleID. Please remove them.")
+        
         if m_file.isnull().values.any():
             print_error("Your map.csv file contains NaNs. Please remove them.")
             return 1
@@ -256,7 +253,7 @@ def check_input_MST(sink:str, p_sinks:str, p_sources:str, m:str,key:str, p_keys:
 
     #Check folder with sources
     if not os.path.isdir(p_sources):
-        print_error("Path to matrix of sources is incorrect or have not created your matrix of sources.")
+        print_error("Path to matrix of sources is incorrect or you have not created your matrix of sources.")
         return 1
     
     try:
@@ -266,11 +263,11 @@ def check_input_MST(sink:str, p_sinks:str, p_sources:str, m:str,key:str, p_keys:
         if samples_m_file!=samples_fof:
             print_error("The samples in the kmtricks.fof of your p_sources/ folder are different from the samples in your map.csv file.")
             return 1
-        if not os.path.isfile(p_sources+"/matrices/matrix_100.pa"):
-            print_error("File matrix_100.pa does not exist. Make sure a binary pa version of your matrix of sources is present in the folder p_sources/matrices/")
+        if not os.path.isfile(p_sources+"/matrices/matrix.pa"):
+            print_error("File matrix.pa does not exist. Make sure a binary pa version of your matrix of sources is present in the folder p_sources/matrices/")
             return 1
-        if not os.path.isfile(p_sources+"/matrices/matrix_100.pa.txt"):
-            print_error("File matrix_100.pa.txt does not exist. Make sure a text pa version of your matrix of sources is present in the folder p_sources/matrices/")
+        if not os.path.isfile(p_sources+"/matrices/matrix.pa.txt"):
+            print_error("File matrix.pa.txt does not exist. Make sure a text pa version of your matrix of sources is present in the folder p_sources/matrices/")
             return 1
     except:
         print_error("p_sources folder is corrupted. Make sure you follow the instructions to create the matrix of sources as described in the README file and make sure you did not remove any file inside output the folder.")

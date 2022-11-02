@@ -1,5 +1,5 @@
 {% set name = "decOM" %}
-{% set version = "0.0.27" %}
+{% set version = "0.0.28" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: c1d6739670a2200869d1d8ac70900f675dba44d4cdf8cb87fa4ab28b87a5b86f
+  sha256: 20177c1c0b2187c09c8da5bc0aa444990be58bb1d650bed00aeaa4414e4ecd40
 
 build:
   number: 0
@@ -17,6 +17,7 @@ build:
     - decOM-format = decOM.format.__main__:main
     - decOM-LOO = decOM.LOO.__main__:main
     - decOM-CV = decOM.CV.__main__:main
+    - decOM-MST = decOM.MST.__main__:main
   script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
@@ -41,17 +42,21 @@ test:
     - decOM
     - decOM.CV
     - decOM.LOO
+    - decOM.MST
     - decOM.aOralOut
     - decOM.data
     - decOM.format
     - decOM.modules
     - test
+  requires:
+    - pytest
   commands:
     - decOM --help
     - decOM-aOralOut --help
     - decOM-format --help
     - decOM-LOO --help
     - decOM-CV --help
+    - decOM-MST --help
 
 about:
   home: "https://github.com/CamilaDuitama/decOM"
