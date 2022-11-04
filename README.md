@@ -169,7 +169,7 @@ To create the `p_sources` you can run [kmtricks](https://github.com/tlemane/kmtr
 ```
 kmtricks pipeline --file kmtricks.fof --run-dir p_sources --mode kmer:pa:bin 
 
-kmtricks aggregate --run-dir p_sources --pa-matrix kmer --cpr-in --output p_sources/matrices/matrix.pa --format bin
+kmtricks aggregate --run-dir p_sources --pa-matrix kmer --output p_sources/matrices/matrix.pa --format bin
 
 kmtricks dump --run-dir p_sources --input p_sources/matrices/matrix.pa.lz4 -o p_sources/matrices/matrix.pa.txt
 

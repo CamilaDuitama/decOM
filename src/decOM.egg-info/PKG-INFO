@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: decOM
-Version: 0.0.28
+Version: 0.0.30
 Summary: decOM: Similarity-based microbial source tracking for contamination assessment of ancient oral samples using k-mer-based methods
 Home-page: https://github.com/CamilaDuitama/decOM
 Author: Camila Duitama González

@@ -1,5 +1,5 @@
 {% set name = "decOM" %}
-{% set version = "0.0.28" %}
+{% set version = "0.0.30" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 20177c1c0b2187c09c8da5bc0aa444990be58bb1d650bed00aeaa4414e4ecd40
+  sha256: a3fcde48070754c425b18d80968201f2ea2fb45985dbd54d9afa8a4f20260269
 
 build:
   number: 0
@@ -48,8 +48,6 @@ test:
     - decOM.format
     - decOM.modules
     - test
-  requires:
-    - pytest
   commands:
     - decOM --help
     - decOM-aOralOut --help

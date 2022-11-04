@@ -351,6 +351,9 @@ def several_sinks(sink:str, p_sinks:str, p_sources:str, p_keys:str, t:int, plot:
             w["Running time (s)"] = np.round(time_sink, decimals=4)
             result = pd.concat([result, w])
             print_status("Contamination assessment for sink " + s + " was finished.")
+            result["decOM_max"] = result[classes].astype(np.int64).apply(find_max,axis=1)
+            result.to_csv(output + "decOM_output.csv", index=False)
+
         c_classes = classes + ["Unknown"]
         result[["p_" + c for c in c_classes]] = result.apply(find_proportions, classes=c_classes, axis=1)
         result["decOM_max"] = result[c_classes].astype(np.int64).apply(find_max,axis=1)
@@ -484,7 +487,9 @@ def LOO(p_sinks, p_sources, p_keys, t, plot, output, mem, resources):
             w["Running time (s)"] = np.round(time_sink, decimals=4)
             result = pd.concat([result, w])
             print_status("Contamination assessment for sink " + s + " was finished.")
+            result["decOM_max"] = result[classes].astype(np.int64).apply(find_max,axis=1)
             result.to_csv(output + "decOM_output.csv", index=False)
+        
         c_classes = classes + ["Unknown"]
         result[["p_" + c for c in c_classes]] = result.apply(find_proportions, classes=c_classes, axis=1)
         result["decOM_max"] = result[c_classes].astype(np.int64).apply(find_max,axis=1)
@@ -607,7 +612,9 @@ def CV(p_sinks, p_sources, p_keys, t, plot, output, mem, resources, fold):
             w["Running time (s)"] = np.round(time_sink, decimals=4)
             result = pd.concat([result, w])
             print_status("Contamination assessment for sink " + s + " was finished.")
+            result["decOM_max"] = result[classes].astype(np.int64).apply(find_max,axis=1)
             result.to_csv(output + "decOM_output_fold_"+fold+".csv", index=False)
+        
         c_classes = classes + ["Unknown"]
         result[["p_" + c for c in c_classes]] = result.apply(find_proportions, classes=c_classes, axis=1)
         result["decOM_max"] = result[c_classes].astype(np.int64).apply(find_max,axis=1)
@@ -898,6 +905,9 @@ def several_sinks_MST(sink:None, p_sinks:str, p_sources:str, m:str, p_keys:str, 
             w["Running time (s)"] = np.round(time_sink, decimals=4)
             result = pd.concat([result, w])
             print_status("Contamination assessment for sink " + s + " was finished.")
+            result["decOM_max"] = result[classes].astype(np.int64).apply(find_max,axis=1)
+            result.to_csv(output + "decOM_output.csv", index=False)
+        
         c_classes = classes + ["Unknown"]
         result[["p_" + c for c in c_classes]] = result.apply(find_proportions, classes=c_classes, axis=1)
         result["decOM_max"] = result[c_classes].astype(np.int64).apply(find_max,axis=1)

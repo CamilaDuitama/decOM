@@ -25,6 +25,7 @@ src/decOM/data/aOralOut_kmtricks.fof
 src/decOM/data/aOralOut_metadata.csv
 src/decOM/data/kmtricks.fof
 src/decOM/data/metadata.csv
+src/decOM/data/metadata.tsv
 src/decOM/data/metadata_sinks_0_fold.csv
 src/decOM/data/metadata_sinks_1_fold.csv
 src/decOM/data/metadata_sinks_2_fold.csv
