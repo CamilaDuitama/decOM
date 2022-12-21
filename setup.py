@@ -23,23 +23,25 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     install_requires=[
-        'plotly>=5.5.0',
-        'importlib_resources>=5.4.0',
-        'dask>=2021.12.0',
-        'kaleido',
-	'colorama'
-        ],
+        "plotly>=5.5.0",
+        "importlib_resources>=5.4.0",
+        "dask>=2021.12.0",
+        "numpy",
+        "kaleido",
+        "colorama",
+        "pandas",
+    ],
     python_requires=">=3.6",
     include_package_data=True,
-    package_data={'': ['data/*']},
+    package_data={"": ["data/*"]},
     entry_points={
-        'console_scripts': [
-            'decOM = decOM.__main__:main',
-            'decOM-aOralOut = decOM.aOralOut.__main__:main',
-            'decOM-format = decOM.format.__main__:main',
-            'decOM-LOO = decOM.LOO.__main__:main',
-            'decOM-CV = decOM.CV.__main__:main',
-            'decOM-MST = decOM.MST.__main__:main'
-            ],
+        "console_scripts": [
+            "decOM = decOM.__main__:main",
+            "decOM-aOralOut = decOM.aOralOut.__main__:main",
+            "decOM-format = decOM.format.__main__:main",
+            "decOM-LOO = decOM.LOO.__main__:main",
+            "decOM-CV = decOM.CV.__main__:main",
+            "decOM-MST = decOM.MST.__main__:main",
+        ],
     },
 )
