@@ -460,6 +460,127 @@ def find_proportions(row:pd.Series, classes:list) -> pd.Series:
         result = pd.Series(data)
     return result
 
+def check_input_LOO(p_sources:str, m:str, t:str, plot:str, output:str, mem:str)->tuple:
+    """Function to verify user input for decOM-LOO is correct
+
+
+    Args:
+        p_sources (str): Path to matrix of sources built with kmtricks.
+
+        m (str) : Path to .csv file with 2 columns : SampleID and Env. 
+        Each source used to build the matrix of sources must be in this table and must have a corresponding environment label.
+
+        t (str): Number of threads to use.
+
+        plot (str): True if you want a plot (in pdf and html format) with the source proportions of the sink, else False.
+
+        output (str): Path to output folder, where you want decOM to write the results.
+
+        mem (str): Memory user would like to allocate for this process.
+
+    Returns:
+        tuple: tuple with output or 1 if user input was incorrect
+    """
+
+    # Verify output directory does not exist already
+    if os.path.isdir(output):
+        print_error("Output directory already exists")
+        return 1
+    #Check if map.csv is correctly formatted:
+    if os.path.isfile(m):
+
+        if m[-4:] != ".csv":
+            print_error("File extension of map is not .csv")
+            return 1  
+        try:
+            m_file=pd.read_csv(m)          
+        except Exception as e:
+            print_error(e)
+            print_error("your map.csv file is corrupted or not properly formatted")
+            return 1
+        
+        nrows_m = open(m).read().splitlines()
+        if len(nrows_m) == 0:
+            print_error("Your map.csv file is empty.")
+            return 1
+
+        true_cols={"Env","SampleID"}
+        user_cols=set(m_file.columns)  
+        
+        if true_cols!=user_cols:
+            print_error("Your map.csv file is not properly formatted. Columns of map.csv file should be Env and SampleID only.")
+            return 1
+
+        elif m_file.duplicated(subset="SampleID").any():
+            print_error("Your map.csv file contains duplicates in the column called SampleID. Please remove them.")
+        
+        if m_file.isnull().values.any():
+            print_error("Your map.csv file contains NaNs. Please remove them.")
+            return 1
+        
+        classes=set(m_file.Env)
+        for c in classes:
+            if m_file[m_file["Env"]==c].shape[0]==1:
+                print_error("You need at least two samples belonging to each source environment, and there is only one sample coming from environment "\
+                            +c+".")
+                return 1
+    else:
+        print_error("map.csv file does not exist or path is incorrect") 
+        return 1
+    
+    # Add / to output directory if not added by the user
+    if output[-1] != "/":
+        output = output + "/"
+
+    if p_sources[-1] != "/":
+        p_sources = p_sources + "/"
+
+    #Check folder with sources
+    if not os.path.isdir(p_sources):
+        print_error("Path to matrix of sources is incorrect or you have not created your matrix of sources.")
+        return 1
+    
+    try:
+        fof=pd.read_csv(p_sources+"kmtricks.fof",sep="\s:\s",engine="python", names=["SampleID","Path"])
+        samples_m_file=set(m_file["SampleID"])
+        samples_fof=set(fof["SampleID"])
+        if samples_m_file!=samples_fof:
+            print_error("The samples in the kmtricks.fof of your p_sources/ folder are different from the samples in your map.csv file.")
+            return 1
+        if not os.path.isfile(p_sources+"/matrices/matrix.pa"):
+            print_error("File matrix.pa does not exist. Make sure a binary pa version of your matrix of sources is present in the folder p_sources/matrices/")
+            return 1
+        if not os.path.isfile(p_sources+"/matrices/matrix.pa.txt"):
+            print_error("File matrix.pa.txt does not exist. Make sure a text pa version of your matrix of sources is present in the folder p_sources/matrices/")
+            return 1
+    except:
+        print_error("p_sources folder is corrupted. Make sure you follow the instructions to create the matrix of sources as described in the README file and make sure you did not remove any file inside output the folder.")
+    
+    # Check number of processes
+    if int(t) <= 0:
+        t = 5
+        print_warning("-t parameter has been set to 5")
+
+    # Check if plot variable was set correctly
+    if plot not in ["True", "False"]:
+        plot = "True"
+        print_warning("-plot parameter has been set to True")
+
+    # Verify input for mem is an integer
+    try:
+        int(mem[0:-2])
+    except:
+        print_error("-mem parameter is incorrectly set. It should be a positive number followed by GB. Ex: 10GB")
+        return 1
+
+    # Verify the user assigned some GB to the process
+    if mem[-2:] != "GB" or int(mem[0:-2]) <= 0:
+        print_error("-mem parameter is incorrectly set. It should be a positive number followed by GB. Ex: 10GB")
+        return 1
+
+    return p_sources, m,t, plot, output, mem
+
+
 def summarize_FEAST(x,Type,Envs)->pd.Series:
     """Function that summarizes FEAST's output by estimating the sum of contributions of each source enviroment
 

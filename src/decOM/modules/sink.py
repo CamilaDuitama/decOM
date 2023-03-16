@@ -29,7 +29,7 @@ def create_vector(output_path:str, path_to_sources:str, key:str, accession:str, 
     output = output_path + accession + "_vector/"
     if path.exists(output):
         subprocess.run(["rm", "-rf", output])
-    try:    
+    try: 
         filter = subprocess.run(
             ["kmtricks", "filter", "--in-matrix", path_to_sources, "--key", key, "--output", output, "--out-types", "k,v"],capture_output=True,text=True)
         print_status("Status for kmtricks filter for sample "+accession+"\n"+filter.stderr[:-1])
@@ -374,12 +374,36 @@ def several_sinks(sink:str, p_sinks:str, p_sources:str, p_keys:str, t:int, plot:
         remove_files("./dask-worker-space/");
         return 1
 
-def LOO(p_sinks, p_sources, p_keys, t, plot, output, mem, resources):
+def LOO(p_sources:str, m:str, t:int, plot:bool, output:str, mem:str):
     
     start = time.time()
 
     # Create folder of results
     subprocess.call(["mkdir", output])
+    subprocess.call(["mkdir", output+"p_keys"])
+
+    #Upload map.csv file
+    metadata = pd.read_csv(m)
+
+    #Create p_sinks
+    metadata[["SampleID"]].to_csv(output+"p_sinks.txt",index=False,header=None)
+    p_sinks=output+"p_sinks.txt" 
+
+    # Load run accession codes for sources from k-mer matrix .fof files
+    colnames = pd.read_csv(p_sources + "kmtricks.fof", sep=" : ",
+                                header=None, names=["SampleID", "to_drop"], engine="python")
+    #Create p_keys
+    p_keys=output+"p_keys/" 
+
+    for sample in colnames.SampleID.tolist():
+        to_write = sample + " : " + colnames[colnames["SampleID"]==sample]["to_drop"].values
+        file = open(p_keys+sample+".fof", "w")
+        file.write(to_write[0])
+        file.close()
+
+    print_status("key.fof files were created for every sample in k-mer matrix of sources")
+
+    colnames.drop(columns="to_drop", inplace=True)
 
     # Initialize dask
     cluster = LocalCluster(memory_limit=mem, n_workers=int(t))
@@ -387,14 +411,20 @@ def LOO(p_sinks, p_sources, p_keys, t, plot, output, mem, resources):
     print_status("Client was set")
     print_status(client)
 
-    # Build result dataframe from unchanged metadata dataframe
-    metadata = pd.read_csv(resources + "/metadata.csv")
-    classes = sorted(list(set(metadata["True_label"])))
+    # Parse sources and classes
+    sources = list(colnames["SampleID"])
+    classes = sorted(list(set(metadata["Env"])))
+
+    #Dictionary to cast count columns from class into integer
+    classes_dict_type=dict.fromkeys(classes, "int")
+
+
+    # Build result dataframe
     result = pd.DataFrame(columns=classes + ["Unknown", "Running time (s)", "Sink"])
 
     try:
         # Create vector of sources
-        sinks = open(p_sinks).read().splitlines()
+        sinks = sources
 
         for s in sinks:
 
@@ -414,7 +444,7 @@ def LOO(p_sinks, p_sources, p_keys, t, plot, output, mem, resources):
                 return 1
             else:
                 print_status("Sink vector for " + s + " exists.")
-
+        
         for s in sinks:
             
             start_sink = time.time()
@@ -423,29 +453,27 @@ def LOO(p_sinks, p_sources, p_keys, t, plot, output, mem, resources):
             path_sink = output + s + "_vector/matrices/sink.vec"
             path_missing_kmers = output + s + "_vector/counts/" + s + "_missing.txt"  
 
-
             # Load metadata from sources
-            metadata = pd.read_csv(resources + "/metadata.csv")
-            metadata = metadata[metadata["Run_accession"] != s]
+            metadata_dummie = metadata[metadata["SampleID"] != s]
 
             # Load run accession codes for sources from k-mer matrix .fof files
-            colnames = pd.read_csv(resources + "/kmtricks.fof", sep=" : ",
-                            header=None, names=["Run_accession", "to_drop"], engine="python")
+            colnames = pd.read_csv(p_sources + "kmtricks.fof", sep=" : ",
+                                header=None, names=["SampleID", "to_drop"], engine="python")
             colnames.drop(columns="to_drop", inplace=True)
 
             # Parse sources and classes
-            sources = [x for x in colnames["Run_accession"] if x != s]
-            classes = sorted(list(set(metadata["True_label"])))
+            sources = [x for x in colnames["SampleID"] if x != s]
+            classes = sorted(list(set(metadata_dummie["Env"])))
 
             # Sort metadata according to column order in matrix DataFrame
-            sorted_metadata = pd.DataFrame(columns=metadata.columns)
+            sorted_metadata = pd.DataFrame(columns=metadata_dummie.columns)
             for j in sources:
-                sorted_metadata = pd.concat([sorted_metadata, metadata[metadata["Run_accession"] == j]])
+                sorted_metadata = pd.concat([sorted_metadata, metadata_dummie[metadata_dummie["SampleID"] == j]])
             sorted_metadata.reset_index(drop=True, inplace=True)
 
             # Load k-mer matrix of sources as dataframe
-            partition = dd.read_table(p_sources + "matrices/matrix_100.pa.txt", header=None, sep=" ",
-                                        names=["Kmer"] + list(colnames["Run_accession"]))
+            partition = dd.read_table(p_sources + "matrices/matrix.pa.txt", header=None, sep=" ",
+                                        names=["Kmer"] + list(colnames["SampleID"]))
 
             # Drop K-mer column
             partition_array = partition.drop(["Kmer",s], axis=1)
@@ -465,16 +493,20 @@ def LOO(p_sinks, p_sources, p_keys, t, plot, output, mem, resources):
             # Define s_t (vector of sink)
             s_t = s_t.persist()
 
+            print_status("s_t vector of sink has been defined")
+
             # Define list of labels for sources
-            labels = [sorted_metadata["True_label"][x] for x in range(len(sources))]
+            labels = [sorted_metadata["Env"][x] for x in range(len(sources))]
 
             # Define matrix H (one hot-encoding of labels)
             H = da.from_array(pd.get_dummies(labels, columns=classes).values)
+            print_status("Matrix H has been defined")
 
             # Construct vector w (number of balls that go into each bin, see eq. 2 in paper)
             w = np.matmul(np.matmul(s_t, M_s), H)
             w = w.compute()
             w = pd.DataFrame(w, index=classes).transpose()
+            print_status("Vector w has been computed")
 
             # Find balls that go into the Unknown bin
             missing_kmers = pd.read_csv(path_missing_kmers, names=["K-mer", "Abundance"], header=None, sep=" ")

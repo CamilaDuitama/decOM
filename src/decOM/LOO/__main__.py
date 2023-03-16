@@ -26,6 +26,7 @@ def _version():
 
 def main():
     remove_files(str(Path.cwd())+"/decOM.log")
+
     # Set path to resources
     resources = str(files(data))
 
@@ -34,19 +35,13 @@ def main():
                                      description="Microbial source tracking for contamination assessment of ancient "
                                                  "oral samples using k-mer-based methods",
                                      add_help=True)
-
     # Mandatory arguments
-    parser.add_argument("-p_sinks", "--path_sinks", dest='PATH_SINKS',
-                              help=".txt file with a list of sinks limited by a newline (\\n).  "
-                                   "When this argument is set, -p_keys/--path_keys must be defined too.",required = True)
     parser.add_argument("-p_sources", "--path_sources", dest='PATH_SOURCES',
-                        help="path to folder downloaded from https://zenodo.org/record/6513520/files/decOM_sources"
-                             ".tar.gz",
+                        help="path to matrix of sources created using kmtricks",
                         required=True)
-    parser.add_argument("-p_keys", "--path_keys", dest='PATH_KEYS',
-                             help=" Path to folder with filtering keys (a kmtricks fof with only one sample). "
-                                  "You should have as many .fof files as sinks. "
-                                  "When this argument is set, -p_sinks/--path_sinks must be defined too.", required = True)
+    parser.add_argument("-m", "--map", dest='MAP_FILE',
+                        help=".csv file with two columns: SampleID and Env. All the samples used to build the input matrix of sources p_sources should be present in this table.",
+                        required=True)
     parser.add_argument("-mem", "--memory", dest='MEMORY',
                         help="Write down how much memory you want to use for this process. Ex: 10GB", required=True,
                         default="10GB")
@@ -70,38 +65,35 @@ def main():
 
     # Parse arguments
     args = parser.parse_args()
-    sink=None
-    key=None
-    p_sinks = args.PATH_SINKS
+
+    # Error mutually inclusive arguments
     p_sources = args.PATH_SOURCES
-    p_keys = args.PATH_KEYS
+    m= args.MAP_FILE
     mem = args.MEMORY
     t = args.THREADS
     plot = args.PLOT
     output = args.OUTPUT
 
     # Check user input is correct
-    checked_input = check_input(sink, p_sinks, p_sources, key, p_keys, t, plot, output, mem, default = True)
+    checked_input = check_input_LOO(p_sources, m, t, plot, output, mem)
     if checked_input == 1:
         return 1
     else:
-        sink, p_sinks, p_sources, key, p_keys, t, plot, output, mem = checked_input
+        p_sources, m, t, plot, output, mem = checked_input
 
-    print_status("Starting decOM version: " + str(_version()))
-    print_status("Leave-one-out feature of decOM has started")
+    print_status("Starting decOM-LOO version: " + str(_version()))
+    print_status("MST feature of decOM has started")
 
     print_status("Arguments decOM-LOO:"+"\n"+ 
-    "sink: "+str(p_sinks)+","+
-    "p_sinks: "+str(p_sinks)+","+
     "p_sources: "+str(p_sources)+","+
-    "key: "+str(p_keys)+","+
-    "p_keys: "+str(p_keys)+","+
+    "m: "+str(p_sources)+","+
     "t: "+str(t)+","+
     "plt: "+str(plot)+","+
     "mem: "+str(mem)+","+ 
     "o: "+str(output))
 
-    return LOO(p_sinks = p_sinks, p_sources = p_sources, p_keys= p_keys, t = t, plot = plot, output = output, mem = mem, resources = resources)
+    #Run decOM-LOO
+    LOO(p_sources, m ,t, plot, output, mem)
 
 if __name__ == "__main__":
     try:
@@ -109,4 +101,3 @@ if __name__ == "__main__":
     except Exception as e:
         eprint(e)
         print_error(e)
-

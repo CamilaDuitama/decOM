@@ -1,5 +1,5 @@
 {% set name = "decOM" %}
-{% set version = "0.0.30" %}
+{% set version = "0.0.31" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: a3fcde48070754c425b18d80968201f2ea2fb45985dbd54d9afa8a4f20260269
+  sha256: f85e93758e6ac02acbbb48f75f1d4582a266124aed671b3f6a78690ab12ac75c
 
 build:
   number: 0
@@ -26,6 +26,8 @@ requirements:
     - dask >=2021.12.0
     - importlib_resources >=5.4.0
     - python-kaleido
+    - numpy >=1.7
+    - pandas
     - pip
     - plotly >=5.5.0
     - python
@@ -34,6 +36,8 @@ requirements:
     - dask >=2021.12.0
     - importlib_resources >=5.4.0
     - python-kaleido
+    - numpy >=1.7
+    - pandas
     - plotly >=5.5.0
     - python
 

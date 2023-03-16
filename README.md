@@ -16,6 +16,7 @@
 + [Additional features](#additional-features)
     + [aOralOut](#aoralout)
     + [MST](#MST)
+    + [LOO](#LOO)
 + [Command-line options](#command-line-options)  
   
 ## System requirements  
@@ -189,6 +190,36 @@ kmtricks aggregate --run-dir p_sources --pa-matrix kmer --output p_sources/matri
 kmtricks dump --run-dir p_sources/ --input p_sources/matrices/matrix.pa -o p_sources/matrices/matrix.pa.txt
 
 decOM-MST -s SRR13355807 -p_sources p_sources/ -m tests/MST/map.csv -k tests/sample/SRR13355807.fof --mem 10GB -t 5
+```
+
+  ### LOO:
+This feature was thought for the users who would like to perform a leave-one-out experiment on their own matrix of sources. This experiment consist on creating a k-mer matrix of sources, extracting one sample to be used as sink and leave the reas out as sources. Once this iteration is finished, `decOM-LOO` would take out a different sink from the matrix of sources, and compare it against the rest of samples.`decOM-LOO` stops once every sample has been compared against the rest. To run `decOM-LOO` you need to create your own `p_sources` folder and additionally you need a `-m` or map file with one label per source. **NOTE**:This feature will only work if there are at least 2 samples representative of each source environment
+
+To create the `p_sources` you can run [kmtricks](https://github.com/tlemane/kmtricks/wiki) (already in your conda environment for decOM) as follows:
+
+```
+kmtricks pipeline --file kmtricks.fof --run-dir p_sources --mode kmer:pa:bin 
+
+kmtricks aggregate --run-dir p_sources --pa-matrix kmer --output p_sources/matrices/matrix.pa --format bin
+
+kmtricks dump --run-dir p_sources --input p_sources/matrices/matrix.pa.lz4 -o p_sources/matrices/matrix.pa.txt
+
+```
+
+**NOTE:** Building a k-mer matrix with any other parameters of kmtricks and using it as input for `decOM-LOO` has not been tested.
+
+You additionally need a `-m` file which is a .csv file of two columns: *Env* and *SampleID*. This is a `x` by 2 table, where `x` is the number of sources in your input k-mer matrix (number of columns in the kmtricks.fof used to run kmtricks). `SampleID` refers to the unique identifier of each source sample, and `Env` is the corresponding label for the source environment from where each sample was taken.
+
+You can run `decOM-LOO` with test data as follows:
+
+```
+kmtricks pipeline --file tests/LOO/kmtricks.fof --run-dir p_sources --mode kmer:pa:bin
+
+kmtricks aggregate --run-dir p_sources --pa-matrix kmer --output p_sources/matrices/matrix.pa --format bin 
+
+kmtricks dump --run-dir p_sources/ --input p_sources/matrices/matrix.pa -o p_sources/matrices/matrix.pa.txt
+
+decOM-LOO -p_sources p_sources/ -m tests/LOO/map.csv --mem 10GB -t 5
 ```
 
 
