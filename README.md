@@ -49,7 +49,6 @@ Please make sure you read the **⚠️NOTE** reminders on this README, as they m
 ```  
 wget https://zenodo.org/record/6513520/files/decOM_sources.tar.gz  
 tar -xf decOM_sources.tar.gz
-
 ```  
 **⚠️NOTE**: Make sure you have reading and writing permissions in the folder where decOM is running and where the input matrix of sources is located!
 
