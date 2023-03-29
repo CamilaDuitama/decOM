@@ -62,7 +62,7 @@ You can test if `decOM` is working by using the aOral sample present in the `tes
 ```  
 decOM -s SRR13355807 -p_sources decOM_sources/ -k tests/sample/SRR13355807.fof -mem 10GB -t 5 
 ```  
-**Note**: The final memory allocated for each run of `decOM` will be your input in `-mem` times the number of cores (`-t`). In the previous run we used 10GB * 5 = 50 GB. It is recommended to run `decOM` with at least 10GB of memory and 1 core.
+**⚠️NOTE**: The final memory allocated for each run of `decOM` will be your input in `-mem` times the number of cores (`-t`). In the previous run we used 10GB * 5 = 50 GB. It is recommended to run regular `decOM` with at least 10GB of memory and 1 core. If you are testing your own k-mer matrix of sources, please try to allocate at least as much memory as the size (in GB) of your matrix.
 
 ### Several sinks
 You can test if `decOM` with several sinks by using the files inside `test/several_samples/` as follows: 
