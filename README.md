@@ -43,14 +43,16 @@ export PATH=/absolute/path/to/decOM:${PATH}
 ```  
   
 ## Before running decOM  
-  
-**BEFORE** running `decOM` you must first download the folder [decOM_sources.tar.gz](https://zenodo.org/record/6513520/files/decOM_sources.tar.gz) and decompress it. You can either follow the link or use wget (it has to be installed in your computer first):  
+Please make sure you read the **⚠️NOTE** reminders on this README, as they might prevent you from running into errors when trying out our method 
+
+**⚠️NOTE**: *BEFORE* running `decOM` you must first download the folder [decOM_sources.tar.gz](https://zenodo.org/record/6513520/files/decOM_sources.tar.gz) and decompress it. You can either follow the link or use wget (it has to be installed in your computer first):  
 ```  
 wget https://zenodo.org/record/6513520/files/decOM_sources.tar.gz  
 tar -xf decOM_sources.tar.gz
 
-**NOTE**: Make sure you have reading and writing permissions in the folder where decOM is running and where the input matrix of sources is located!
 ```  
+**⚠️NOTE**: Make sure you have reading and writing permissions in the folder where decOM is running and where the input matrix of sources is located!
+
 The path of the extracted directory `decOM_sources` will be requested through the input parameter `-p_sources` each time `decOM` is run (see examples below).
   
 ## Test  
@@ -60,7 +62,7 @@ You can test if `decOM` is working by using the aOral sample present in the `tes
 ```  
 decOM -s SRR13355807 -p_sources decOM_sources/ -k tests/sample/SRR13355807.fof -mem 10GB -t 5 
 ```  
-*Note*: The final memory allocated for each run of `decOM` will be your input in `-mem` times the number of cores (`-t`). In the previous run we used 10GB * 5 = 50 GB. It is recommended to run `decOM` with at least 10GB of memory and 1 core.
+**Note**: The final memory allocated for each run of `decOM` will be your input in `-mem` times the number of cores (`-t`). In the previous run we used 10GB * 5 = 50 GB. It is recommended to run `decOM` with at least 10GB of memory and 1 core.
 
 ### Several sinks
 You can test if `decOM` with several sinks by using the files inside `test/several_samples/` as follows: 
@@ -107,7 +109,7 @@ The `key.fof` has one line of text depending on your type of data:
 **-Paired-end :**  
  `s : path/to/file/s_1.fastq.gz;  path/to/file/s_2.fastq.gz `  
   
-*Note*: As `decOM` relies on [`kmtricks`](https://github.com/tlemane/kmtricks), you might use a FASTA or FASTQ format, gzipped or not, which means you have to change the `key.fof` file accordingly.  
+**⚠️NOTE**: As `decOM` relies on [`kmtricks`](https://github.com/tlemane/kmtricks), you might use a FASTA or FASTQ format, gzipped or not, which means you have to change the `key.fof` file accordingly.  
   
 Since you now have the fasta/fastq file of your sink, the folder with the matrix of sources and the key file, simply run `decOM` as follows:  
 
@@ -178,7 +180,7 @@ kmtricks dump --run-dir p_sources --input p_sources/matrices/matrix.pa.lz4 -o p_
 
 ```
 
-**NOTE:** Building a k-mer matrix with any other parameters of kmtricks and using it as input for `decOM-MST` has not been tested.
+**⚠️NOTE:** Building a k-mer matrix with any other parameters of kmtricks and using it as input for `decOM-MST` has not been tested.
 
 You additionally need a `-m` file which is a .csv file of two columns: *Env* and *SampleID*. This is a `x` by 2 table, where `x` is the number of sources in your input k-mer matrix (number of columns in the kmtricks.fof used to run kmtricks). `SampleID` refers to the unique identifier of each source sample, and `Env` is the corresponding label for the source environment from where each sample was taken.
 
@@ -197,7 +199,7 @@ decOM-MST -s SRR13355807 -p_sources p_sources/ -m tests/MST/map.csv -k tests/sam
   ### LOO:
 This feature was thought for the users who would like to perform a leave-one-out experiment on their own matrix of sources. This experiment consist on creating a k-mer matrix of sources, extracting one sample to be used as sink and leave the reas out as sources. Once this iteration is finished, `decOM-LOO` would take out a different sink from the matrix of sources, and compare it against the rest of samples.`decOM-LOO` stops once every sample has been compared against the rest. To run `decOM-LOO` you need to create your own `p_sources` folder and additionally you need a `-m` or map file with one label per source. 
 
-**NOTE**:This feature will only work if there are at least 2 samples representative of each source environment
+**⚠️NOTE**:This feature will only work if there are at least 2 samples representative of each source environment
 
 To create the `p_sources` you can run [kmtricks](https://github.com/tlemane/kmtricks/wiki) (already in your conda environment for decOM) as follows:
 
@@ -210,7 +212,7 @@ kmtricks dump --run-dir p_sources --input p_sources/matrices/matrix.pa.lz4 -o p_
 
 ```
 
-**NOTE:** Building a k-mer matrix with any other parameters of kmtricks and using it as input for `decOM-LOO` has not been tested.
+**⚠️NOTE:** Building a k-mer matrix with any other parameters of kmtricks and using it as input for `decOM-LOO` has not been tested.
 
 You additionally need a `-m` file which is a .csv file of two columns: *Env* and *SampleID*. This is a `x` by 2 table, where `x` is the number of sources in your input k-mer matrix (number of columns in the kmtricks.fof used to run kmtricks). `SampleID` refers to the unique identifier of each source sample, and `Env` is the corresponding label for the source environment from where each sample was taken.
 
