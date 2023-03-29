@@ -48,6 +48,8 @@ export PATH=/absolute/path/to/decOM:${PATH}
 ```  
 wget https://zenodo.org/record/6513520/files/decOM_sources.tar.gz  
 tar -xf decOM_sources.tar.gz
+
+**NOTE**: Make sure you have reading and writing permissions in the folder where decOM is running and where the input matrix of sources is located!
 ```  
 The path of the extracted directory `decOM_sources` will be requested through the input parameter `-p_sources` each time `decOM` is run (see examples below).
   
@@ -193,7 +195,9 @@ decOM-MST -s SRR13355807 -p_sources p_sources/ -m tests/MST/map.csv -k tests/sam
 ```
 
   ### LOO:
-This feature was thought for the users who would like to perform a leave-one-out experiment on their own matrix of sources. This experiment consist on creating a k-mer matrix of sources, extracting one sample to be used as sink and leave the reas out as sources. Once this iteration is finished, `decOM-LOO` would take out a different sink from the matrix of sources, and compare it against the rest of samples.`decOM-LOO` stops once every sample has been compared against the rest. To run `decOM-LOO` you need to create your own `p_sources` folder and additionally you need a `-m` or map file with one label per source. **NOTE**:This feature will only work if there are at least 2 samples representative of each source environment
+This feature was thought for the users who would like to perform a leave-one-out experiment on their own matrix of sources. This experiment consist on creating a k-mer matrix of sources, extracting one sample to be used as sink and leave the reas out as sources. Once this iteration is finished, `decOM-LOO` would take out a different sink from the matrix of sources, and compare it against the rest of samples.`decOM-LOO` stops once every sample has been compared against the rest. To run `decOM-LOO` you need to create your own `p_sources` folder and additionally you need a `-m` or map file with one label per source. 
+
+**NOTE**:This feature will only work if there are at least 2 samples representative of each source environment
 
 To create the `p_sources` you can run [kmtricks](https://github.com/tlemane/kmtricks/wiki) (already in your conda environment for decOM) as follows:
 
