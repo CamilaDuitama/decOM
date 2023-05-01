@@ -171,7 +171,7 @@ This feature was thought for the users who prefer building their own k-mer matri
 To create the `p_sources` you can run [kmtricks](https://github.com/tlemane/kmtricks/wiki) (already in your conda environment for decOM) as follows:
 
 ```
-kmtricks pipeline --file kmtricks.fof --run-dir p_sources --mode kmer:pa:bin 
+kmtricks pipeline --file kmtricks.fof --run-dir p_sources --mode kmer:pa:bin --restrict-to 1
 
 kmtricks aggregate --run-dir p_sources --pa-matrix kmer --output p_sources/matrices/matrix.pa --format bin
 
@@ -179,14 +179,14 @@ kmtricks dump --run-dir p_sources --input p_sources/matrices/matrix.pa.lz4 -o p_
 
 ```
 
-**⚠️NOTE:** Building a k-mer matrix with any other parameters of kmtricks and using it as input for `decOM-MST` has not been tested.
+**⚠️NOTE:** The parameter --restrict-to-list can be changed to add more partitions to your final matrix, `kmtricks` will tell you how many partitions are expected in total. Ex: --restrict-to 1,2,3
 
 You additionally need a `-m` file which is a .csv file of two columns: *Env* and *SampleID*. This is a `x` by 2 table, where `x` is the number of sources in your input k-mer matrix (number of columns in the kmtricks.fof used to run kmtricks). `SampleID` refers to the unique identifier of each source sample, and `Env` is the corresponding label for the source environment from where each sample was taken.
 
 You can run `decOM-MST` with test data as follows:
 
 ```
-kmtricks pipeline --file tests/MST/kmtricks.fof --run-dir p_sources --mode kmer:pa:bin
+kmtricks pipeline --file tests/MST/kmtricks.fof --run-dir p_sources --mode kmer:pa:bin --restrict-to 1
 
 kmtricks aggregate --run-dir p_sources --pa-matrix kmer --output p_sources/matrices/matrix.pa --format bin 
 
