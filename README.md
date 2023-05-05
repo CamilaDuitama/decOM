@@ -187,7 +187,7 @@ You additionally need a `-m` file which is a .csv file of two columns: *Env* and
 You can run `decOM-MST` with test data as follows:
 
 ```
-kmtricks pipeline --file tests/MST/kmtricks.fof --run-dir p_sources --mode kmer:pa:bin --restrict-to 1
+kmtricks pipeline --file tests/MST/kmtricks.fof --run-dir p_sources --mode kmer:pa:bin --restrict-to-list 1
 
 kmtricks aggregate --run-dir p_sources --pa-matrix kmer --output p_sources/matrices/matrix.pa --format bin 
 
