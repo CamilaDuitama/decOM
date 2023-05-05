@@ -171,14 +171,14 @@ This feature was thought for the users who prefer building their own k-mer matri
 To create the `p_sources` you can run [kmtricks](https://github.com/tlemane/kmtricks/wiki) (already in your conda environment for decOM) as follows:
 
 ```
-kmtricks pipeline --file kmtricks.fof --run-dir p_sources --mode kmer:pa:bin --restrict-to 1
+kmtricks pipeline --file kmtricks.fof --run-dir p_sources --mode kmer:pa:bin --restrict-to-list 1
 
 kmtricks aggregate --run-dir p_sources --pa-matrix kmer --output p_sources/matrices/matrix.pa --format bin
 
 kmtricks dump --run-dir p_sources --input p_sources/matrices/matrix.pa.lz4 -o p_sources/matrices/matrix.pa.txt
 
 ```
-**⚠️NOTE:** The parameter --restrict-to-list can be changed to add more partitions to your final matrix, `kmtricks` will tell you how many partitions are expected in total. Ex: --restrict-to 1,2,3
+**⚠️NOTE:** The parameter --restrict-to-list can be changed to add more partitions to your final matrix, `kmtricks` will tell you how many partitions are expected in total. Ex: --restrict-to-list 1,2,3
 
 **⚠️NOTE:** For a 10GB k-mer matrix, the expected resources of memory (--mem 10GB) and number of threads (-t 5) are enough to run in a couple of minutes. If your matrix is larger, consider enforcing also the parameter --nb_partitions (Ex: --nb_partitions 1000) or allocating more memory/nthreads to your job
 
