@@ -1,5 +1,6 @@
   
-# decOM: Similarity-based microbial source tracking of ancient oral samples using k-mer-based methods  
+# decOM: Similarity-based microbial source tracking of ancient oral samples using k-mer-based methods
+## Paper (here)[https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-023-01670-3]
   
 `decOM` is a high-accuracy microbial source tracking method that is suitable for contamination quantification in paleogenomics, namely the analysis of collections of possibly contaminated ancient oral metagenomic data sets. **In few words**, if you want to know how contaminated your ancient oral metagenomic sample is, this tool will help  🧹🦷🧹
   
