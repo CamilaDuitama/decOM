@@ -3,7 +3,7 @@
   
 `decOM` is a high-accuracy microbial source tracking method that is suitable for contamination quantification in paleogenomics, namely the analysis of collections of possibly contaminated ancient oral metagenomic data sets. **In few words**, if you want to know how contaminated your ancient oral metagenomic sample is, this tool will help  🧹🦷🧹
   
-![pipeline_version2](https://raw.githubusercontent.com/CamilaDuitama/decOM/master/images/pipeline_version2.png?token=GHSAT0AAAAAABNF5TKQVZ7GWFJNDVX6VDVAYSGEMGA)  
+![pipeline_version2](images/pipeline_version2.png)  
 
 **In longer words** `decOM` comes with a k-mer matrix of ancient Oral(aOral) metagenomic samples and its possible contaminants: Sediment/Soil, Skin and modern oral (mOral). It represents every sink the user inputs as a presence/absence vector of k-mers and then estimates and outputs the proportions of each source environment in the sink. Ex: K-mer AAACG is present in the input sink S and in source S1 labelled as Skin, S5 labelled as aOral and S7 labelled as mOral, hence one ball is added to the bin of Skin, aOral and mOral respectively. After every entry in the the sink vector is compared against every entry of every vector in the sources, decOM outputs the estimated environment proportions and the hard label assigned to the sink $s$ is that of the environment with the highest contribution.
 
