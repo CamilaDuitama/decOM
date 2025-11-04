@@ -1,5 +1,6 @@
 dask-worker-space/
 .ipynb_checkpoints/
+decOM_sources/
 tests/aOralOut_sources
 tests/CV
 tests/decOM_sources
