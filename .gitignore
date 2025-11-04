@@ -26,3 +26,13 @@ tests/MST/map_original.csv
 src/
 *.egg-info/
 *.egg
+
+# Job output files
+*.err
+*.out
+
+# Large data files
+data/unitigs/*.fa
+data/unitigs/*.zst
+data/unitigs/muset_output/
+data/unitigs/muset_output_test/
